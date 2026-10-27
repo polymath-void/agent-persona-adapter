@@ -121,8 +121,18 @@ python3 scripts/apa.py clear
 # Fuzzy search
 python3 scripts/apa.py search cursor
 
+# Capability tags
+python3 scripts/apa.py list --tag browser
+python3 scripts/apa.py search tdd
+
+# Custom persona lifecycle
+python3 scripts/apa.py new <id> --vendor V --family f --aliases a,b --tags x,y
+python3 scripts/apa.py edit <id>            # $EDITOR, refreshes sha + registry shadow
+python3 scripts/apa.py export <id> -o f.apa # tar.gz bundle (manifest+persona+source)
+python3 scripts/apa.py import f.apa --as <newid>
+
 # --- universal registrar (native surfaces) ---
-# List registration targets (24 agents)
+# List registration targets (22 agents)
 python3 scripts/register.py list
 
 # Install persona into one agent's native format
@@ -130,6 +140,9 @@ python3 scripts/register.py install claude-code --agent cursor-agent --project /
 
 # Auto-detect + fill every known agent surface in a project
 python3 scripts/register.py install claude-code --agent auto --project /path/to/repo
+
+# Push into EVERY surface incl. user-global (Gemini ext, AGY plugin)
+python3 scripts/register.py install claude-code --agent all --project /path/to/repo
 
 # Preview / audit
 python3 scripts/register.py install claude-code --agent antigravity --project . --dry-run

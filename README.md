@@ -30,8 +30,12 @@ Agent: (loads the Claude Code system-prompt persona from the registry)
 ```bash
 cd ~/Projects/agent-persona-adapter
 
-# List all 31 personas
+# List all 42 personas
 python3 scripts/apa.py list
+
+# Filter by capability
+python3 scripts/apa.py list --tag browser     # 5 personas
+python3 scripts/apa.py search tdd             # claude-code, opencode, roo-code
 
 # Activate a persona (prints the persona payload)
 python3 scripts/apa.py switch claude-code
@@ -46,7 +50,14 @@ python3 scripts/apa.py status
 # Restore your native persona
 python3 scripts/apa.py clear
 
-# Rebuild personas from ref-repo
+# Custom persona lifecycle
+python3 scripts/apa.py new my-agent --vendor Acme --family custom \
+        --aliases ma --tags terminal,tdd
+python3 scripts/apa.py edit my-agent          # opens $EDITOR, refreshes sha
+python3 scripts/apa.py export my-agent -o my-agent.apa
+python3 scripts/apa.py import my-agent.apa --as my-agent-v2
+
+# Rebuild personas from ref-repo (custom.json survives)
 python3 scripts/ingest.py
 ```
 
@@ -67,7 +78,10 @@ python3 scripts/ingest.py
 
 ---
 
-## Registered personas (31)
+## Registered personas (42)
+
+<details>
+<summary>Original 31 (click to expand)</summary>
 
 | Persona | Vendor | Aliases |
 |---------|--------|---------|
@@ -102,6 +116,15 @@ python3 scripts/ingest.py
 | hermes | Nous | nous, her |
 | lumo | Proton | proton, lm |
 | mimo-code | Xiaomi | mimo, xi |
+</details>
+
+**Phase 3 additions**: cluely · codebuddy (Tencent) · emergent · leap-new ·
+orchids · poke · same-dev · v0 (Vercel) · xcode (Apple) · zai-code (Zhipu) ·
+claude-chrome (Anthropic)
+
+Every persona carries **capability tags** (`terminal`, `tdd`, `browser`,
+`spec-driven`, …) — filter with `apa.py list --tag <tag>` or search with
+`apa.py search <tag>`.
 
 Full metadata: [`registry/agents.json`](registry/agents.json)
 
@@ -225,6 +248,10 @@ python3 scripts/register.py install claude-code --agent auto --project ~/myrepo
 #   → .claude/skills/, .cursor/rules/, .agents/skills/, .opencode/skills/,
 #     .clinerules/, .roomodes (Roo custom mode), .devin/rules/,
 #     .kiro/steering/, .github/agents/ (Copilot), AGENTS.md block, …
+
+# Push into EVERY known surface incl. user-global (Gemini extension,
+# Antigravity plugin) — one command, full pre-registration
+python3 scripts/register.py install claude-code --agent all --project ~/myrepo
 
 # Preview / audit
 python3 scripts/register.py install claude-code --agent kiro --project . --dry-run

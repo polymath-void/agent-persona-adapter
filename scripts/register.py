@@ -184,6 +184,17 @@ def plan_install(args) -> list:
     regmap = load_map()
     targets = regmap["targets"]
 
+    if args.agent == "all":
+        # push the persona into EVERY known on-disk surface (project + user-global)
+        args.user = True  # enable user-global emitters (Antigravity plugin, etc.)
+        fm, body = load_persona(args.persona)
+        plan: list = []
+        for name, t in targets.items():
+            if name == "no-filesystem" or not t.get("capabilities"):
+                continue
+            plan += _plan_for_agent(name, targets, fm, body, args)
+        return plan
+
     if args.agent == "auto":
         # register into every verified on-disk surface that exists in the project
         proj = Path(args.project)
@@ -239,7 +250,7 @@ def _plan_for_agent(agent: str, targets: dict, fm: dict, body: str, args) -> lis
                   pid, fm, body, plan)
     elif agent == "antigravity":
         emit_skill_md(proj / ".agents" / "skills", pid, fm, body, plan)
-        if args.user:
+        if args.user or getattr(args, "all", False):
             emit_antigravity_plugin(home, pid, fm, body, plan)
     elif agent == "codex-cli":
         emit_agents_md_block(proj / "AGENTS.md", pid, fm, body, plan)
@@ -363,7 +374,8 @@ def main() -> int:
 
     p = sub.add_parser("install", help="install persona into target agent surface")
     p.add_argument("persona")
-    p.add_argument("--agent", default="auto", help="agent id or 'auto' (detect from project dirs)")
+    p.add_argument("--agent", default="auto",
+                   help="agent id, 'auto' (detect from project dirs), or 'all' (every known surface)")
     p.add_argument("--project", default=".")
     p.add_argument("--user", action="store_true", help="also install user-global surface where supported")
     p.add_argument("--dry-run", action="store_true")

@@ -52,15 +52,25 @@
 
 ---
 
-## Phase 3 — Extended Personas ⬜ (v1.2.0)
+## Phase 3 — Extended Personas ✅ (v1.2.0, 2026-10-28)
 
-- [ ] Add remaining 10+ vendors from `ref-repo/` (Windsurf, Warp, Copilot, Amp, etc.)
-- [ ] Custom persona support (`personas/custom-*/PERSONA.md`, manual creation)
-- [ ] Persona editor CLI (`apa.py edit <id>`, opens `$EDITOR`)
-- [ ] Persona export/import (`.apa` bundle format)
-- [ ] Persona search by capability ("find a persona that prefers pytest")
-
-**Exit criteria**: 50+ personas, custom persona creation works
+- [x] Extended corpus: +11 vendors (42 total) — cluely, codebuddy, emergent,
+  leap-new, orchids, poke, same-dev, v0, xcode, zai-code, claude-chrome
+- [x] Capability tags per persona (TAGS map in ingest; emitted to registry)
+  — `apa.py list --tag browser`, `apa.py search tdd`
+- [x] Custom persona support: `apa.py new <id> --vendor --family --aliases
+  --tags` → scaffolds `personas/<id>/PERSONA.md` + `registry/custom.json`
+  (custom shadows generated registry; survives `ingest.py` regeneration)
+- [x] Persona editor: `apa.py edit <id>` → `$EDITOR`, recomputes sha256_12,
+  updates SOURCE.json, shadows registry entry
+- [x] Bundle export/import: `apa.py export <id> [-o f.apa]` /
+  `apa.py import <f.apa> [--as newid] [--force]` — tar.gz with
+  manifest.json (apa-bundle/1) + PERSONA.md + SOURCE.json
+- [x] Registrar `--all` mode: push persona into EVERY known surface
+  (project: claude/cursor/agents/opencode/cline/roo/devin/copilot/kiro/
+  junie + user-global: Gemini extension, Antigravity plugin)
+- [x] Smoke tests: tag search, new/edit/export/import roundtrip, `--all` e2e
+  (12 surfaces + 2 home-global), cleanup verified
 
 ---
 

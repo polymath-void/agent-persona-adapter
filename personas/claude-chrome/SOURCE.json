@@ -1,0 +1,7 @@
+{
+  "id": "claude-chrome",
+  "source": "ref-repo/Anthropic/Claude for Chrome/Prompt.txt",
+  "sha256_12": "ff0649602355",
+  "bytes": 23792,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

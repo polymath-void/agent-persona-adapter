@@ -1,0 +1,7 @@
+{
+  "id": "poke",
+  "source": "ref-repo/Poke/Poke agent.txt",
+  "sha256_12": "8fba761ae23f",
+  "bytes": 12134,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

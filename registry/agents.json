@@ -17,7 +17,15 @@
         "@APA claudecode"
       ],
       "payload": "personas/claude-code/PERSONA.md",
-      "sha256_12": "8319763fd3ed"
+      "sha256_12": "8319763fd3ed",
+      "tags": [
+        "terminal",
+        "tdd",
+        "git-flow",
+        "refactoring",
+        "general"
+      ],
+      "origin": "ref-repo"
     },
     "cursor-agent": {
       "vendor": "Cursor",
@@ -33,7 +41,15 @@
         "@APA cur"
       ],
       "payload": "personas/cursor-agent/PERSONA.md",
-      "sha256_12": "b786e4eef822"
+      "sha256_12": "b786e4eef822",
+      "tags": [
+        "ide",
+        "typescript",
+        "react",
+        "refactoring",
+        "multi-file"
+      ],
+      "origin": "ref-repo"
     },
     "antigravity": {
       "vendor": "Google",
@@ -52,7 +68,15 @@
         "@APA google-antigravity"
       ],
       "payload": "personas/antigravity/PERSONA.md",
-      "sha256_12": "33489ecee1fd"
+      "sha256_12": "33489ecee1fd",
+      "tags": [
+        "ide",
+        "planning",
+        "gcp",
+        "vertex",
+        "terminal"
+      ],
+      "origin": "ref-repo"
     },
     "codex-cli": {
       "vendor": "OpenAI",
@@ -70,7 +94,14 @@
         "@APA oai"
       ],
       "payload": "personas/codex-cli/PERSONA.md",
-      "sha256_12": "a7e8f2d63678"
+      "sha256_12": "a7e8f2d63678",
+      "tags": [
+        "terminal",
+        "git-flow",
+        "sandbox",
+        "general"
+      ],
+      "origin": "ref-repo"
     },
     "gemini-cli": {
       "vendor": "Google",
@@ -88,7 +119,14 @@
         "@APA google-cli"
       ],
       "payload": "personas/gemini-cli/PERSONA.md",
-      "sha256_12": "ad82a6b334a4"
+      "sha256_12": "ad82a6b334a4",
+      "tags": [
+        "terminal",
+        "gcp",
+        "extensions",
+        "general"
+      ],
+      "origin": "ref-repo"
     },
     "opencode": {
       "vendor": "OpenCode",
@@ -106,7 +144,14 @@
         "@APA opencode-oc"
       ],
       "payload": "personas/opencode/PERSONA.md",
-      "sha256_12": "be6a9e8da6e1"
+      "sha256_12": "be6a9e8da6e1",
+      "tags": [
+        "terminal",
+        "tdd",
+        "free-models",
+        "general"
+      ],
+      "origin": "ref-repo"
     },
     "cline": {
       "vendor": "Cline",
@@ -122,7 +167,15 @@
         "@APA clinerobot"
       ],
       "payload": "personas/cline/PERSONA.md",
-      "sha256_12": "da8beef9350a"
+      "sha256_12": "da8beef9350a",
+      "tags": [
+        "ide",
+        "planning",
+        "act-mode",
+        "vscode",
+        "checkpoints"
+      ],
+      "origin": "ref-repo"
     },
     "roo-code": {
       "vendor": "Roo",
@@ -140,7 +193,15 @@
         "@APA roo-code-agent"
       ],
       "payload": "personas/roo-code/PERSONA.md",
-      "sha256_12": "259a82488039"
+      "sha256_12": "259a82488039",
+      "tags": [
+        "ide",
+        "modes",
+        "architect",
+        "tdd",
+        "vscode"
+      ],
+      "origin": "ref-repo"
     },
     "windsurf": {
       "vendor": "Windsurf",
@@ -158,7 +219,14 @@
         "@APA codeium"
       ],
       "payload": "personas/windsurf/PERSONA.md",
-      "sha256_12": "e5494f800575"
+      "sha256_12": "e5494f800575",
+      "tags": [
+        "ide",
+        "cascade",
+        "memories",
+        "rules"
+      ],
+      "origin": "ref-repo"
     },
     "qwen-code": {
       "vendor": "Qwen",
@@ -176,7 +244,13 @@
         "@APA qcoder"
       ],
       "payload": "personas/qwen-code/PERSONA.md",
-      "sha256_12": "fc40884dfaf8"
+      "sha256_12": "fc40884dfaf8",
+      "tags": [
+        "terminal",
+        "alibaba",
+        "general"
+      ],
+      "origin": "ref-repo"
     },
     "copilot": {
       "vendor": "GitHub",
@@ -194,7 +268,15 @@
         "@APA cp"
       ],
       "payload": "personas/copilot/PERSONA.md",
-      "sha256_12": "6f1037e0ab5f"
+      "sha256_12": "6f1037e0ab5f",
+      "tags": [
+        "ide",
+        "github",
+        "pr-review",
+        "agent-mode",
+        "vscode"
+      ],
+      "origin": "ref-repo"
     },
     "amp": {
       "vendor": "Sourcegraph",
@@ -210,7 +292,13 @@
         "@APA sg"
       ],
       "payload": "personas/amp/PERSONA.md",
-      "sha256_12": "8bddbdc59999"
+      "sha256_12": "8bddbdc59999",
+      "tags": [
+        "terminal",
+        "sourcegraph",
+        "multi-model"
+      ],
+      "origin": "ref-repo"
     },
     "warp-agent": {
       "vendor": "Warp",
@@ -226,7 +314,13 @@
         "@APA wp"
       ],
       "payload": "personas/warp-agent/PERSONA.md",
-      "sha256_12": "167ecf74e58b"
+      "sha256_12": "167ecf74e58b",
+      "tags": [
+        "terminal",
+        "workflows",
+        "blocks"
+      ],
+      "origin": "ref-repo"
     },
     "trae": {
       "vendor": "ByteDance",
@@ -242,7 +336,13 @@
         "@APA tr"
       ],
       "payload": "personas/trae/PERSONA.md",
-      "sha256_12": "8d044e7e3ca7"
+      "sha256_12": "8d044e7e3ca7",
+      "tags": [
+        "ide",
+        "builder",
+        "bytedance"
+      ],
+      "origin": "ref-repo"
     },
     "kiro": {
       "vendor": "AWS",
@@ -258,7 +358,15 @@
         "@APA kr"
       ],
       "payload": "personas/kiro/PERSONA.md",
-      "sha256_12": "18c455a83743"
+      "sha256_12": "18c455a83743",
+      "tags": [
+        "ide",
+        "spec-driven",
+        "aws",
+        "steering",
+        "planning"
+      ],
+      "origin": "ref-repo"
     },
     "junie": {
       "vendor": "JetBrains",
@@ -274,7 +382,14 @@
         "@APA jetbrains"
       ],
       "payload": "personas/junie/PERSONA.md",
-      "sha256_12": "dfc09dc34a52"
+      "sha256_12": "dfc09dc34a52",
+      "tags": [
+        "ide",
+        "jetbrains",
+        "kotlin",
+        "debugging"
+      ],
+      "origin": "ref-repo"
     },
     "devin": {
       "vendor": "Cognition",
@@ -290,7 +405,14 @@
         "@APA dv"
       ],
       "payload": "personas/devin/PERSONA.md",
-      "sha256_12": "f76ec0d76db3"
+      "sha256_12": "f76ec0d76db3",
+      "tags": [
+        "autonomous",
+        "browser",
+        "pr",
+        "planning"
+      ],
+      "origin": "ref-repo"
     },
     "replit-agent": {
       "vendor": "Replit",
@@ -306,7 +428,13 @@
         "@APA rp"
       ],
       "payload": "personas/replit-agent/PERSONA.md",
-      "sha256_12": "61cb99054ef3"
+      "sha256_12": "61cb99054ef3",
+      "tags": [
+        "cloud",
+        "fullstack",
+        "deploy"
+      ],
+      "origin": "ref-repo"
     },
     "lovable": {
       "vendor": "Lovable",
@@ -322,7 +450,14 @@
         "@APA lv"
       ],
       "payload": "personas/lovable/PERSONA.md",
-      "sha256_12": "f93a29f28a16"
+      "sha256_12": "f93a29f28a16",
+      "tags": [
+        "react",
+        "supabase",
+        "saas",
+        "fullstack"
+      ],
+      "origin": "ref-repo"
     },
     "bolt-new": {
       "vendor": "StackBlitz",
@@ -338,7 +473,14 @@
         "@APA stackblitz"
       ],
       "payload": "personas/bolt-new/PERSONA.md",
-      "sha256_12": "2563f4d4dd02"
+      "sha256_12": "2563f4d4dd02",
+      "tags": [
+        "react",
+        "stackblitz",
+        "fullstack",
+        "browser"
+      ],
+      "origin": "ref-repo"
     },
     "augment": {
       "vendor": "Augment",
@@ -354,7 +496,13 @@
         "@APA augment-code"
       ],
       "payload": "personas/augment/PERSONA.md",
-      "sha256_12": "66fc02964714"
+      "sha256_12": "66fc02964714",
+      "tags": [
+        "ide",
+        "codebase-context",
+        "vscode"
+      ],
+      "origin": "ref-repo"
     },
     "kilo-code": {
       "vendor": "Kilo",
@@ -370,7 +518,13 @@
         "@APA kl"
       ],
       "payload": "personas/kilo-code/PERSONA.md",
-      "sha256_12": "6f948c51624a"
+      "sha256_12": "6f948c51624a",
+      "tags": [
+        "ide",
+        "modes",
+        "vscode"
+      ],
+      "origin": "ref-repo"
     },
     "manus": {
       "vendor": "Manus",
@@ -386,7 +540,14 @@
         "@APA manus-agent"
       ],
       "payload": "personas/manus/PERSONA.md",
-      "sha256_12": "1fa6844e2f52"
+      "sha256_12": "1fa6844e2f52",
+      "tags": [
+        "autonomous",
+        "browser",
+        "research",
+        "tools"
+      ],
+      "origin": "ref-repo"
     },
     "qoder": {
       "vendor": "Qoder",
@@ -402,7 +563,13 @@
         "@APA quest"
       ],
       "payload": "personas/qoder/PERSONA.md",
-      "sha256_12": "f0b806b73848"
+      "sha256_12": "f0b806b73848",
+      "tags": [
+        "ide",
+        "quest",
+        "agentic"
+      ],
+      "origin": "ref-repo"
     },
     "traycer": {
       "vendor": "Traycer",
@@ -418,7 +585,13 @@
         "@APA traycer-ai"
       ],
       "payload": "personas/traycer/PERSONA.md",
-      "sha256_12": "4078a61e02df"
+      "sha256_12": "4078a61e02df",
+      "tags": [
+        "planning",
+        "phases",
+        "orchestration"
+      ],
+      "origin": "ref-repo"
     },
     "notion-ai": {
       "vendor": "Notion",
@@ -434,7 +607,13 @@
         "@APA nt"
       ],
       "payload": "personas/notion-ai/PERSONA.md",
-      "sha256_12": "07bbe938baa1"
+      "sha256_12": "07bbe938baa1",
+      "tags": [
+        "docs",
+        "knowledge",
+        "workspace"
+      ],
+      "origin": "ref-repo"
     },
     "perplexity": {
       "vendor": "Perplexity",
@@ -450,7 +629,13 @@
         "@APA pxy"
       ],
       "payload": "personas/perplexity/PERSONA.md",
-      "sha256_12": "95ebf3c3e19e"
+      "sha256_12": "95ebf3c3e19e",
+      "tags": [
+        "research",
+        "search",
+        "citations"
+      ],
+      "origin": "ref-repo"
     },
     "comet": {
       "vendor": "Perplexity",
@@ -466,7 +651,13 @@
         "@APA comet-assistant"
       ],
       "payload": "personas/comet/PERSONA.md",
-      "sha256_12": "0368fbba98a8"
+      "sha256_12": "0368fbba98a8",
+      "tags": [
+        "browser",
+        "research",
+        "shopping"
+      ],
+      "origin": "ref-repo"
     },
     "hermes": {
       "vendor": "Nous",
@@ -482,7 +673,13 @@
         "@APA her"
       ],
       "payload": "personas/hermes/PERSONA.md",
-      "sha256_12": "84281a50eb9a"
+      "sha256_12": "84281a50eb9a",
+      "tags": [
+        "open-weight",
+        "terminal",
+        "nous"
+      ],
+      "origin": "ref-repo"
     },
     "lumo": {
       "vendor": "Proton",
@@ -498,7 +695,13 @@
         "@APA lm"
       ],
       "payload": "personas/lumo/PERSONA.md",
-      "sha256_12": "9bba854dc84f"
+      "sha256_12": "9bba854dc84f",
+      "tags": [
+        "privacy",
+        "terminal",
+        "proton"
+      ],
+      "origin": "ref-repo"
     },
     "mimo-code": {
       "vendor": "Xiaomi",
@@ -514,7 +717,263 @@
         "@APA xi"
       ],
       "payload": "personas/mimo-code/PERSONA.md",
-      "sha256_12": "f4befbd85425"
+      "sha256_12": "f4befbd85425",
+      "tags": [
+        "terminal",
+        "xiaomi",
+        "general"
+      ],
+      "origin": "ref-repo"
+    },
+    "cluely": {
+      "vendor": "Cluely",
+      "family": "cluely",
+      "aliases": [
+        "cly",
+        "cluely-assistant"
+      ],
+      "invocations": [
+        "/APA cluely",
+        "@APA cluely",
+        "@APA cly",
+        "@APA cluely-assistant"
+      ],
+      "payload": "personas/cluely/PERSONA.md",
+      "sha256_12": "81e20c1ac494",
+      "tags": [
+        "realtime",
+        "screen",
+        "stealth"
+      ],
+      "origin": "ref-repo"
+    },
+    "codebuddy": {
+      "vendor": "Tencent",
+      "family": "codebuddy",
+      "aliases": [
+        "cb",
+        "tencent-codebuddy"
+      ],
+      "invocations": [
+        "/APA codebuddy",
+        "@APA codebuddy",
+        "@APA cb",
+        "@APA tencent-codebuddy"
+      ],
+      "payload": "personas/codebuddy/PERSONA.md",
+      "sha256_12": "522bd735a2c3",
+      "tags": [
+        "ide",
+        "craft",
+        "tencent"
+      ],
+      "origin": "ref-repo"
+    },
+    "emergent": {
+      "vendor": "Emergent",
+      "family": "emergent",
+      "aliases": [
+        "emg",
+        "emergent-sh"
+      ],
+      "invocations": [
+        "/APA emergent",
+        "@APA emergent",
+        "@APA emg",
+        "@APA emergent-sh"
+      ],
+      "payload": "personas/emergent/PERSONA.md",
+      "sha256_12": "ccbab968862d",
+      "tags": [
+        "autonomous",
+        "fullstack",
+        "generation"
+      ],
+      "origin": "ref-repo"
+    },
+    "leap-new": {
+      "vendor": "Leap.new",
+      "family": "leap",
+      "aliases": [
+        "leap",
+        "lp"
+      ],
+      "invocations": [
+        "/APA leap-new",
+        "@APA leap-new",
+        "@APA leap",
+        "@APA lp"
+      ],
+      "payload": "personas/leap-new/PERSONA.md",
+      "sha256_12": "5c5e51f743c2",
+      "tags": [
+        "no-code",
+        "saas",
+        "generation"
+      ],
+      "origin": "ref-repo"
+    },
+    "orchids": {
+      "vendor": "Orchids",
+      "family": "orchids",
+      "aliases": [
+        "orch",
+        "orchids-app"
+      ],
+      "invocations": [
+        "/APA orchids",
+        "@APA orchids",
+        "@APA orch",
+        "@APA orchids-app"
+      ],
+      "payload": "personas/orchids/PERSONA.md",
+      "sha256_12": "d6a49f3126c9",
+      "tags": [
+        "planning",
+        "decision-making",
+        "workflows"
+      ],
+      "origin": "ref-repo"
+    },
+    "poke": {
+      "vendor": "Poke",
+      "family": "poke",
+      "aliases": [
+        "pk",
+        "poke-agent"
+      ],
+      "invocations": [
+        "/APA poke",
+        "@APA poke",
+        "@APA pk",
+        "@APA poke-agent"
+      ],
+      "payload": "personas/poke/PERSONA.md",
+      "sha256_12": "8fba761ae23f",
+      "tags": [
+        "realtime",
+        "voice",
+        "agent"
+      ],
+      "origin": "ref-repo"
+    },
+    "same-dev": {
+      "vendor": "Same.dev",
+      "family": "same",
+      "aliases": [
+        "same",
+        "samedev"
+      ],
+      "invocations": [
+        "/APA same-dev",
+        "@APA same-dev",
+        "@APA same",
+        "@APA samedev"
+      ],
+      "payload": "personas/same-dev/PERSONA.md",
+      "sha256_12": "2ada93142574",
+      "tags": [
+        "clone",
+        "fullstack",
+        "replication"
+      ],
+      "origin": "ref-repo"
+    },
+    "v0": {
+      "vendor": "Vercel",
+      "family": "v0",
+      "aliases": [
+        "vercel",
+        "v0dev"
+      ],
+      "invocations": [
+        "/APA v0",
+        "@APA v0",
+        "@APA vercel",
+        "@APA v0dev"
+      ],
+      "payload": "personas/v0/PERSONA.md",
+      "sha256_12": "04f92bb984b2",
+      "tags": [
+        "react",
+        "ui",
+        "vercel",
+        "generation"
+      ],
+      "origin": "ref-repo"
+    },
+    "xcode": {
+      "vendor": "Apple",
+      "family": "xcode",
+      "aliases": [
+        "apple",
+        "xc",
+        "swift-ide"
+      ],
+      "invocations": [
+        "/APA xcode",
+        "@APA xcode",
+        "@APA apple",
+        "@APA xc",
+        "@APA swift-ide"
+      ],
+      "payload": "personas/xcode/PERSONA.md",
+      "sha256_12": "6e7623859641",
+      "tags": [
+        "ide",
+        "swift",
+        "ios",
+        "macos"
+      ],
+      "origin": "ref-repo"
+    },
+    "zai-code": {
+      "vendor": "Zhipu",
+      "family": "zai",
+      "aliases": [
+        "zai",
+        "zhipu",
+        "glm-code"
+      ],
+      "invocations": [
+        "/APA zai-code",
+        "@APA zai-code",
+        "@APA zai",
+        "@APA zhipu",
+        "@APA glm-code"
+      ],
+      "payload": "personas/zai-code/PERSONA.md",
+      "sha256_12": "bf2d3afacb3d",
+      "tags": [
+        "terminal",
+        "zhipu",
+        "glm"
+      ],
+      "origin": "ref-repo"
+    },
+    "claude-chrome": {
+      "vendor": "Anthropic",
+      "family": "claude",
+      "aliases": [
+        "chrome",
+        "claude-browser",
+        "ccr"
+      ],
+      "invocations": [
+        "/APA claude-chrome",
+        "@APA claude-chrome",
+        "@APA chrome",
+        "@APA claude-browser",
+        "@APA ccr"
+      ],
+      "payload": "personas/claude-chrome/PERSONA.md",
+      "sha256_12": "ff0649602355",
+      "tags": [
+        "browser",
+        "chrome",
+        "assistant"
+      ],
+      "origin": "ref-repo"
     }
   }
 }

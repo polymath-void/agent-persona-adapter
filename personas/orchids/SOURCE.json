@@ -1,0 +1,7 @@
+{
+  "id": "orchids",
+  "source": "ref-repo/Orchids.app/System Prompt.txt",
+  "sha256_12": "d6a49f3126c9",
+  "bytes": 24013,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

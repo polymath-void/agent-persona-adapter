@@ -1,0 +1,7 @@
+{
+  "id": "same-dev",
+  "source": "ref-repo/Same.dev/Prompt.txt",
+  "sha256_12": "2ada93142574",
+  "bytes": 24054,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}
