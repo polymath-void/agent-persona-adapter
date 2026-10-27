@@ -724,9 +724,14 @@ LEXICON: dict[str, list[str]] = {
 def cmd_suggest(args) -> int:
     reg = _load_registry()["agents"]
     q = args.text.lower()
+
+    def has(word: str) -> bool:
+        """Whole-word match only (never match 'ag' inside 'landing')."""
+        return re.search(r"(?<![a-z0-9])" + re.escape(word) + r"(?![a-z0-9])", q) is not None
+
     wanted: dict = {}
     for kw, tags in LEXICON.items():
-        if kw in q:
+        if has(kw):
             for t in tags:
                 wanted[t] = wanted.get(t, 0) + 2
     scores: dict = {}
@@ -735,13 +740,14 @@ def cmd_suggest(args) -> int:
         s = 0.0
         rs = []
         for alias in [pid] + e.get("aliases", []):
-            if alias and alias.lower() in q:
+            if alias and has(alias.lower()):
                 s += 3
                 rs.append(f"alias '{alias}' in text")
                 break
-        if e.get("vendor", "").lower() in q and len(e.get("vendor", "")):
+        vendor = e.get("vendor", "")
+        if vendor and has(vendor.lower()):
             s += 2
-            rs.append(f"vendor {e['vendor']}")
+            rs.append(f"vendor {vendor}")
         for t in e.get("tags", []):
             if t in wanted:
                 s += wanted[t]

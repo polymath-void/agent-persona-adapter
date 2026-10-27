@@ -63,9 +63,10 @@ agent-persona-adapter/
 │   ├── 05_safety_floor.md       ← ADAPTER FLOOR (non-negotiable)
 │   └── 06_context_management.md ← context rules
 ├── skills/
-│   └── APA/SKILL.md             ← canonical skill definition
+│   └── APA/                     ← canonical skill: SKILL.md + command/apa.md
 ├── scripts/
 │   ├── apa.py                   ← core resolver + state CLI (27 commands)
+│   ├── install.py               ← device installer (apa shim + skill links)
 │   ├── register.py              ← universal native-surface registrar
 │   └── ingest.py                ← ref-repo → personas builder
 ├── server/
@@ -113,6 +114,11 @@ agent-persona-adapter/
 ## 5. Quick Commands
 
 ```bash
+# ONE-TIME device install: global `apa` shim + skill links + /APA commands
+# (idempotent, rootless-safe, --uninstall to remove what it creates)
+python3 scripts/install.py
+apa list                        # works from ANY cwd after install
+
 # Build / rebuild personas from ref-repo
 python3 scripts/ingest.py
 
