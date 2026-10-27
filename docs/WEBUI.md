@@ -164,3 +164,68 @@ LMK guard: `serve.py` refuses to start if free RAM < 1 GB (`pmc status` probe).
 | Audit timeline + stats | M |
 | Editor screen | M |
 | Polish: vendor hues, HUD strip, copy-to-clipboard for cloud paste | S |
+
+---
+
+## 8. Serverless variant (static SPA, zero daemon)
+
+**Same codebase, dual-mode mount.** One React build that runs two ways:
+
+| Mode | Backend | State | Mutations | Deploy |
+|---|---|---|---|---|
+| `local` (Phase 4) | FastAPI on :8787 | real JSON files | direct fs writes | this device |
+| **`serverless`** | **none** | **IndexedDB (browser-local)** | **download artifacts** | **GitHub Pages / Cloudflare Pages / `file://`** |
+
+Feature detection at boot: if `GET /api/state` unreachable → serverless mode.
+
+### 8.1 Data plane — snapshot, not database
+- `apa.py snapshot [-o ui/public/snapshot.json]` → one JSON:
+  `{registry(42 personas + full bodies), registrations_map, state, audit_tail(200), generated_at}`
+- Build embeds it (`vite` JSON import) **and** runtime accepts drag-drop
+  re-sync (drop a fresh snapshot → live refresh). No server needed ever.
+- Public edge catalog variant: `npm run build:public` strips `state`+`audit`
+  → read-only persona browser, safe to publish (payloads are research
+  material already in the public corpus).
+
+### 8.2 Logic plane — JS port, byte-identical digests
+- `resolve()`: exact → alias → fuzzy. Port difflib scoring, cutoff 0.72
+  (same matches as CLI; golden-test against 42 ids + typo corpus).
+- Hashes via SubtleCrypto `SHA-256` → first 12 hex = same `sha256_12` as
+  Python (provenance stays verifiable in-browser).
+- Registration emit logic ported to JS (frontmatter templates come from
+  `registrations.json` — data-driven, one emitter per capability).
+- Rejected: Pyodide running real `apa.py` — 10 MB wasm + LMK risk for zero
+  drift gain once golden tests pass.
+
+### 8.3 Mutation plane — everything becomes an artifact
+No fs in a browser, so every write is a **download you apply**:
+
+| UI action | Artifact | Apply with |
+|---|---|---|
+| switch / clear | payload copy-to-clipboard (paste into any cloud agent) + virtual timeline in IndexedDB | `apa.py switch` (canonical) |
+| new / edit custom persona | `.apa` bundle (tar.gz via fflate, same `apa-bundle/1` format) | `apa.py import f.apa` |
+| push --all | zip of all 12 native surface files (correct dirs: `.claude/skills/…`, `.cursor/rules/…`, `.roomodes`, …) | `unzip -o bundle.zip -d ~/myrepo` |
+| push single cell | that one file | `mv` into place |
+| apply state | `state-patch.json` | `apa.py apply-patch` (new, ~15 lines) |
+
+Every artifact card prints the exact shell line to apply it — the
+transparency rule survives with zero server.
+
+### 8.4 What serverless cannot do (honest limits)
+- ❌ write the local filesystem / run `register.py` directly
+- ❌ read live `audit.log` (snapshot is point-in-time; re-snapshot to refresh)
+- ❌ enforce destructive-op gates (downloads are inert; gates live in CLI)
+- ✅ everything read + all artifact generation works offline, on `file://`,
+  and on any static host
+
+### 8.5 Build matrix
+```bash
+npm run build            # local mode (expects :8787)
+npm run build:serverless # embedded snapshot, IndexedDB, artifact mutations
+npm run build:public     # serverless minus state/audit → edge catalog
+```
+Deploy: `gh-pages` branch or Cloudflare Pages (both free, static-only).
+
+**Recommendation**: build UI once in serverless mode first (no pip, no
+daemon, LMK-immune, deployable to Pages for the catalog), then layer the
+FastAPI mount as the "full cockpit" on-device. One codebase, both worlds.

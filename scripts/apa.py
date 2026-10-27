@@ -463,6 +463,49 @@ def cmd_import(args) -> int:
     return 0
 
 
+def cmd_snapshot(args) -> int:
+    """One-file data plane for the serverless UI (docs/WEBUI.md §8.1)."""
+    reg = _load_registry()
+    state = _read_state()
+
+    audit_tail: list = []
+    if AUDIT.exists():
+        for ln in AUDIT.read_text(encoding="utf-8").splitlines()[-args.audit:]:
+            try:
+                audit_tail.append(json.loads(ln))
+            except json.JSONDecodeError:
+                continue
+
+    personas: dict = {}
+    for pid, e in sorted(reg["agents"].items()):
+        pfile = persona_path(pid)
+        if pfile.exists():
+            personas[pid] = {"meta": e, "payload": pfile.read_text(encoding="utf-8")}
+
+    regmap = _read_json(ROOT / "registry" / "registrations.json", {})
+
+    snap = {
+        "format": "apa-snapshot/1",
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "personas": personas,
+        "registrations": regmap,
+        "state": state,
+        "audit_tail": audit_tail,
+    }
+    if args.public:
+        # edge-catalog variant: strip session data entirely (safe to publish)
+        snap.pop("state")
+        snap.pop("audit_tail")
+
+    out = Path(args.output) if args.output else ROOT / "ui" / "public" / "snapshot.json"
+    _write_json(out, snap)
+    mode = "public" if args.public else "full"
+    _audit("snapshot", {"file": str(out), "mode": mode, "personas": len(personas)})
+    print(f"apa: snapshot ({mode}) -> {out} ({out.stat().st_size} bytes, "
+          f"{len(personas)} personas)")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(prog="apa", description="Agent Persona Adapter")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -505,11 +548,18 @@ def main() -> int:
     p.add_argument("--as", dest="as_id", help="target id (rename on import)")
     p.add_argument("--force", action="store_true", help="overwrite existing id")
 
+    p = sub.add_parser("snapshot",
+                       help="dump one JSON data-plane file for the serverless UI")
+    p.add_argument("-o", "--output", help="output path (default ui/public/snapshot.json)")
+    p.add_argument("--public", action="store_true",
+                   help="edge-catalog variant: strip state + audit_tail")
+    p.add_argument("--audit", type=int, default=200, help="audit tail size (default 200)")
+
     args = ap.parse_args()
     fn = {"list": cmd_list, "switch": cmd_switch, "info": cmd_info,
           "clear": cmd_clear, "status": cmd_status, "search": cmd_search,
           "new": cmd_new, "edit": cmd_edit, "export": cmd_export,
-          "import": cmd_import}[args.cmd]
+          "import": cmd_import, "snapshot": cmd_snapshot}[args.cmd]
     try:
         return fn(args)
     except BrokenPipeError:

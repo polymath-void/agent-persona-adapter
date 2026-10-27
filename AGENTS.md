@@ -131,6 +131,10 @@ python3 scripts/apa.py edit <id>            # $EDITOR, refreshes sha + registry 
 python3 scripts/apa.py export <id> -o f.apa # tar.gz bundle (manifest+persona+source)
 python3 scripts/apa.py import f.apa --as <newid>
 
+# Serverless-UI data plane (docs/WEBUI.md §8)
+python3 scripts/apa.py snapshot                    # full -> ui/public/snapshot.json
+python3 scripts/apa.py snapshot --public -o cat.json  # edge catalog (no state/audit)
+
 # --- universal registrar (native surfaces) ---
 # List registration targets (22 agents)
 python3 scripts/register.py list
