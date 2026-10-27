@@ -1,0 +1,7 @@
+{
+  "id": "lovable",
+  "source": "ref-repo/Lovable/Agent Prompt.txt",
+  "sha256_12": "f93a29f28a16",
+  "bytes": 20039,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "codex-cli",
+  "source": "ref-repo/Open Source prompts/Codex CLI/openai-codex-cli-system-prompt-20250820.txt",
+  "sha256_12": "a7e8f2d63678",
+  "bytes": 23697,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

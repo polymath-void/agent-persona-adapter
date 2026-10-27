@@ -1,0 +1,19 @@
+# APA state (session-scoped, not versioned)
+state/active.json
+state/audit.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+{
+  "id": "perplexity",
+  "source": "ref-repo/Perplexity/Prompt.txt",
+  "sha256_12": "95ebf3c3e19e",
+  "bytes": 9379,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

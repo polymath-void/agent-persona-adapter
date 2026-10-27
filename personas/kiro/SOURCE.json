@@ -1,0 +1,7 @@
+{
+  "id": "kiro",
+  "source": "ref-repo/Kiro/Spec_Prompt.txt",
+  "sha256_12": "18c455a83743",
+  "bytes": 24047,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

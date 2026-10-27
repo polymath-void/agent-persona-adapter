@@ -1,0 +1,7 @@
+{
+  "id": "cursor-agent",
+  "source": "ref-repo/Cursor Prompts/Agent Prompt 2.0.txt",
+  "sha256_12": "b786e4eef822",
+  "bytes": 23972,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

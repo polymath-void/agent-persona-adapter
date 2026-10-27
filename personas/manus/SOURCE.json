@@ -1,0 +1,7 @@
+{
+  "id": "manus",
+  "source": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt",
+  "sha256_12": "1fa6844e2f52",
+  "bytes": 10208,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

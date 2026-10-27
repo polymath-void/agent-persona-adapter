@@ -1,0 +1,7 @@
+{
+  "id": "junie",
+  "source": "ref-repo/Junie/Prompt.txt",
+  "sha256_12": "dfc09dc34a52",
+  "bytes": 6134,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

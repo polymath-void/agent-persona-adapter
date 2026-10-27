@@ -1,0 +1,7 @@
+{
+  "id": "warp-agent",
+  "source": "ref-repo/Warp.dev/Prompt.txt",
+  "sha256_12": "167ecf74e58b",
+  "bytes": 14527,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

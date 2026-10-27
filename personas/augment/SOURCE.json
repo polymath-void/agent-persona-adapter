@@ -1,0 +1,7 @@
+{
+  "id": "augment",
+  "source": "ref-repo/Augment Code/claude-4-sonnet-agent-prompts.txt",
+  "sha256_12": "66fc02964714",
+  "bytes": 10687,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

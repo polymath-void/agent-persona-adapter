@@ -1,0 +1,520 @@
+{
+  "agents": {
+    "claude-code": {
+      "vendor": "Anthropic",
+      "family": "claude",
+      "aliases": [
+        "claude",
+        "cc",
+        "claudecode",
+        "anthropic"
+      ],
+      "invocations": [
+        "/APA claude-code",
+        "@APA claude-code",
+        "@APA claude",
+        "@APA cc",
+        "@APA claudecode"
+      ],
+      "payload": "personas/claude-code/PERSONA.md",
+      "sha256_12": "8319763fd3ed"
+    },
+    "cursor-agent": {
+      "vendor": "Cursor",
+      "family": "cursor",
+      "aliases": [
+        "cursor",
+        "cur"
+      ],
+      "invocations": [
+        "/APA cursor-agent",
+        "@APA cursor-agent",
+        "@APA cursor",
+        "@APA cur"
+      ],
+      "payload": "personas/cursor-agent/PERSONA.md",
+      "sha256_12": "b786e4eef822"
+    },
+    "antigravity": {
+      "vendor": "Google",
+      "family": "agy",
+      "aliases": [
+        "agy",
+        "antigravity",
+        "google-antigravity",
+        "ag"
+      ],
+      "invocations": [
+        "/APA antigravity",
+        "@APA antigravity",
+        "@APA agy",
+        "@APA antigravity",
+        "@APA google-antigravity"
+      ],
+      "payload": "personas/antigravity/PERSONA.md",
+      "sha256_12": "33489ecee1fd"
+    },
+    "codex-cli": {
+      "vendor": "OpenAI",
+      "family": "codex",
+      "aliases": [
+        "codex",
+        "openai-codex",
+        "oai"
+      ],
+      "invocations": [
+        "/APA codex-cli",
+        "@APA codex-cli",
+        "@APA codex",
+        "@APA openai-codex",
+        "@APA oai"
+      ],
+      "payload": "personas/codex-cli/PERSONA.md",
+      "sha256_12": "a7e8f2d63678"
+    },
+    "gemini-cli": {
+      "vendor": "Google",
+      "family": "gemini",
+      "aliases": [
+        "gemini",
+        "gcli",
+        "google-cli"
+      ],
+      "invocations": [
+        "/APA gemini-cli",
+        "@APA gemini-cli",
+        "@APA gemini",
+        "@APA gcli",
+        "@APA google-cli"
+      ],
+      "payload": "personas/gemini-cli/PERSONA.md",
+      "sha256_12": "ad82a6b334a4"
+    },
+    "opencode": {
+      "vendor": "OpenCode",
+      "family": "opencode",
+      "aliases": [
+        "oc",
+        "opn",
+        "opencode-oc"
+      ],
+      "invocations": [
+        "/APA opencode",
+        "@APA opencode",
+        "@APA oc",
+        "@APA opn",
+        "@APA opencode-oc"
+      ],
+      "payload": "personas/opencode/PERSONA.md",
+      "sha256_12": "be6a9e8da6e1"
+    },
+    "cline": {
+      "vendor": "Cline",
+      "family": "cline",
+      "aliases": [
+        "cl",
+        "clinerobot"
+      ],
+      "invocations": [
+        "/APA cline",
+        "@APA cline",
+        "@APA cl",
+        "@APA clinerobot"
+      ],
+      "payload": "personas/cline/PERSONA.md",
+      "sha256_12": "da8beef9350a"
+    },
+    "roo-code": {
+      "vendor": "Roo",
+      "family": "roo",
+      "aliases": [
+        "roo",
+        "roocode",
+        "roo-code-agent"
+      ],
+      "invocations": [
+        "/APA roo-code",
+        "@APA roo-code",
+        "@APA roo",
+        "@APA roocode",
+        "@APA roo-code-agent"
+      ],
+      "payload": "personas/roo-code/PERSONA.md",
+      "sha256_12": "259a82488039"
+    },
+    "windsurf": {
+      "vendor": "Windsurf",
+      "family": "windsurf",
+      "aliases": [
+        "ws",
+        "cascade",
+        "codeium"
+      ],
+      "invocations": [
+        "/APA windsurf",
+        "@APA windsurf",
+        "@APA ws",
+        "@APA cascade",
+        "@APA codeium"
+      ],
+      "payload": "personas/windsurf/PERSONA.md",
+      "sha256_12": "e5494f800575"
+    },
+    "qwen-code": {
+      "vendor": "Qwen",
+      "family": "qwen",
+      "aliases": [
+        "qwen",
+        "qw",
+        "qcoder"
+      ],
+      "invocations": [
+        "/APA qwen-code",
+        "@APA qwen-code",
+        "@APA qwen",
+        "@APA qw",
+        "@APA qcoder"
+      ],
+      "payload": "personas/qwen-code/PERSONA.md",
+      "sha256_12": "fc40884dfaf8"
+    },
+    "copilot": {
+      "vendor": "GitHub",
+      "family": "copilot",
+      "aliases": [
+        "gh",
+        "github-copilot",
+        "cp"
+      ],
+      "invocations": [
+        "/APA copilot",
+        "@APA copilot",
+        "@APA gh",
+        "@APA github-copilot",
+        "@APA cp"
+      ],
+      "payload": "personas/copilot/PERSONA.md",
+      "sha256_12": "6f1037e0ab5f"
+    },
+    "amp": {
+      "vendor": "Sourcegraph",
+      "family": "amp",
+      "aliases": [
+        "amper",
+        "sg"
+      ],
+      "invocations": [
+        "/APA amp",
+        "@APA amp",
+        "@APA amper",
+        "@APA sg"
+      ],
+      "payload": "personas/amp/PERSONA.md",
+      "sha256_12": "8bddbdc59999"
+    },
+    "warp-agent": {
+      "vendor": "Warp",
+      "family": "warp",
+      "aliases": [
+        "warp",
+        "wp"
+      ],
+      "invocations": [
+        "/APA warp-agent",
+        "@APA warp-agent",
+        "@APA warp",
+        "@APA wp"
+      ],
+      "payload": "personas/warp-agent/PERSONA.md",
+      "sha256_12": "167ecf74e58b"
+    },
+    "trae": {
+      "vendor": "ByteDance",
+      "family": "trae",
+      "aliases": [
+        "bytedance",
+        "tr"
+      ],
+      "invocations": [
+        "/APA trae",
+        "@APA trae",
+        "@APA bytedance",
+        "@APA tr"
+      ],
+      "payload": "personas/trae/PERSONA.md",
+      "sha256_12": "8d044e7e3ca7"
+    },
+    "kiro": {
+      "vendor": "AWS",
+      "family": "kiro",
+      "aliases": [
+        "aws-kiro",
+        "kr"
+      ],
+      "invocations": [
+        "/APA kiro",
+        "@APA kiro",
+        "@APA aws-kiro",
+        "@APA kr"
+      ],
+      "payload": "personas/kiro/PERSONA.md",
+      "sha256_12": "18c455a83743"
+    },
+    "junie": {
+      "vendor": "JetBrains",
+      "family": "junie",
+      "aliases": [
+        "jb",
+        "jetbrains"
+      ],
+      "invocations": [
+        "/APA junie",
+        "@APA junie",
+        "@APA jb",
+        "@APA jetbrains"
+      ],
+      "payload": "personas/junie/PERSONA.md",
+      "sha256_12": "dfc09dc34a52"
+    },
+    "devin": {
+      "vendor": "Cognition",
+      "family": "devin",
+      "aliases": [
+        "cognition",
+        "dv"
+      ],
+      "invocations": [
+        "/APA devin",
+        "@APA devin",
+        "@APA cognition",
+        "@APA dv"
+      ],
+      "payload": "personas/devin/PERSONA.md",
+      "sha256_12": "f76ec0d76db3"
+    },
+    "replit-agent": {
+      "vendor": "Replit",
+      "family": "replit",
+      "aliases": [
+        "replit",
+        "rp"
+      ],
+      "invocations": [
+        "/APA replit-agent",
+        "@APA replit-agent",
+        "@APA replit",
+        "@APA rp"
+      ],
+      "payload": "personas/replit-agent/PERSONA.md",
+      "sha256_12": "61cb99054ef3"
+    },
+    "lovable": {
+      "vendor": "Lovable",
+      "family": "lovable",
+      "aliases": [
+        "lov",
+        "lv"
+      ],
+      "invocations": [
+        "/APA lovable",
+        "@APA lovable",
+        "@APA lov",
+        "@APA lv"
+      ],
+      "payload": "personas/lovable/PERSONA.md",
+      "sha256_12": "f93a29f28a16"
+    },
+    "bolt-new": {
+      "vendor": "StackBlitz",
+      "family": "bolt",
+      "aliases": [
+        "bolt",
+        "stackblitz"
+      ],
+      "invocations": [
+        "/APA bolt-new",
+        "@APA bolt-new",
+        "@APA bolt",
+        "@APA stackblitz"
+      ],
+      "payload": "personas/bolt-new/PERSONA.md",
+      "sha256_12": "2563f4d4dd02"
+    },
+    "augment": {
+      "vendor": "Augment",
+      "family": "augment",
+      "aliases": [
+        "aug",
+        "augment-code"
+      ],
+      "invocations": [
+        "/APA augment",
+        "@APA augment",
+        "@APA aug",
+        "@APA augment-code"
+      ],
+      "payload": "personas/augment/PERSONA.md",
+      "sha256_12": "66fc02964714"
+    },
+    "kilo-code": {
+      "vendor": "Kilo",
+      "family": "kilo",
+      "aliases": [
+        "kilo",
+        "kl"
+      ],
+      "invocations": [
+        "/APA kilo-code",
+        "@APA kilo-code",
+        "@APA kilo",
+        "@APA kl"
+      ],
+      "payload": "personas/kilo-code/PERSONA.md",
+      "sha256_12": "6f948c51624a"
+    },
+    "manus": {
+      "vendor": "Manus",
+      "family": "manus",
+      "aliases": [
+        "mn",
+        "manus-agent"
+      ],
+      "invocations": [
+        "/APA manus",
+        "@APA manus",
+        "@APA mn",
+        "@APA manus-agent"
+      ],
+      "payload": "personas/manus/PERSONA.md",
+      "sha256_12": "1fa6844e2f52"
+    },
+    "qoder": {
+      "vendor": "Qoder",
+      "family": "qoder",
+      "aliases": [
+        "qd",
+        "quest"
+      ],
+      "invocations": [
+        "/APA qoder",
+        "@APA qoder",
+        "@APA qd",
+        "@APA quest"
+      ],
+      "payload": "personas/qoder/PERSONA.md",
+      "sha256_12": "f0b806b73848"
+    },
+    "traycer": {
+      "vendor": "Traycer",
+      "family": "traycer",
+      "aliases": [
+        "tc",
+        "traycer-ai"
+      ],
+      "invocations": [
+        "/APA traycer",
+        "@APA traycer",
+        "@APA tc",
+        "@APA traycer-ai"
+      ],
+      "payload": "personas/traycer/PERSONA.md",
+      "sha256_12": "4078a61e02df"
+    },
+    "notion-ai": {
+      "vendor": "Notion",
+      "family": "notion",
+      "aliases": [
+        "notion",
+        "nt"
+      ],
+      "invocations": [
+        "/APA notion-ai",
+        "@APA notion-ai",
+        "@APA notion",
+        "@APA nt"
+      ],
+      "payload": "personas/notion-ai/PERSONA.md",
+      "sha256_12": "07bbe938baa1"
+    },
+    "perplexity": {
+      "vendor": "Perplexity",
+      "family": "pplx",
+      "aliases": [
+        "pplx",
+        "pxy"
+      ],
+      "invocations": [
+        "/APA perplexity",
+        "@APA perplexity",
+        "@APA pplx",
+        "@APA pxy"
+      ],
+      "payload": "personas/perplexity/PERSONA.md",
+      "sha256_12": "95ebf3c3e19e"
+    },
+    "comet": {
+      "vendor": "Perplexity",
+      "family": "comet",
+      "aliases": [
+        "perplexity-browser",
+        "comet-assistant"
+      ],
+      "invocations": [
+        "/APA comet",
+        "@APA comet",
+        "@APA perplexity-browser",
+        "@APA comet-assistant"
+      ],
+      "payload": "personas/comet/PERSONA.md",
+      "sha256_12": "0368fbba98a8"
+    },
+    "hermes": {
+      "vendor": "Nous",
+      "family": "hermes",
+      "aliases": [
+        "nous",
+        "her"
+      ],
+      "invocations": [
+        "/APA hermes",
+        "@APA hermes",
+        "@APA nous",
+        "@APA her"
+      ],
+      "payload": "personas/hermes/PERSONA.md",
+      "sha256_12": "84281a50eb9a"
+    },
+    "lumo": {
+      "vendor": "Proton",
+      "family": "lumo",
+      "aliases": [
+        "proton",
+        "lm"
+      ],
+      "invocations": [
+        "/APA lumo",
+        "@APA lumo",
+        "@APA proton",
+        "@APA lm"
+      ],
+      "payload": "personas/lumo/PERSONA.md",
+      "sha256_12": "9bba854dc84f"
+    },
+    "mimo-code": {
+      "vendor": "Xiaomi",
+      "family": "mimo",
+      "aliases": [
+        "mimo",
+        "xi"
+      ],
+      "invocations": [
+        "/APA mimo-code",
+        "@APA mimo-code",
+        "@APA mimo",
+        "@APA xi"
+      ],
+      "payload": "personas/mimo-code/PERSONA.md",
+      "sha256_12": "f4befbd85425"
+    }
+  }
+}

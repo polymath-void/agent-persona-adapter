@@ -1,0 +1,7 @@
+{
+  "id": "bolt-new",
+  "source": "ref-repo/Open Source prompts/Bolt/Prompt.txt",
+  "sha256_12": "2563f4d4dd02",
+  "bytes": 20039,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

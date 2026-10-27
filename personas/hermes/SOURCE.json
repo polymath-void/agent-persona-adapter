@@ -1,0 +1,7 @@
+{
+  "id": "hermes",
+  "source": "ref-repo/Open Source prompts/Hermes/Agent Prompt (nemotron.3.5.lightning-free) 2026-09-11.txt",
+  "sha256_12": "84281a50eb9a",
+  "bytes": 13826,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

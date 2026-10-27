@@ -1,0 +1,7 @@
+{
+  "id": "copilot",
+  "source": "ref-repo/VSCode Agent/Prompt.txt",
+  "sha256_12": "6f1037e0ab5f",
+  "bytes": 19052,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}

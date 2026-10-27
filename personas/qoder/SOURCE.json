@@ -1,0 +1,7 @@
+{
+  "id": "qoder",
+  "source": "ref-repo/Qoder/prompt.txt",
+  "sha256_12": "f0b806b73848",
+  "bytes": 18466,
+  "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
+}
