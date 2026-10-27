@@ -1,6 +1,6 @@
 {
   "format": "apa-snapshot/1",
-  "generated_at": "2026-10-28T04:14:27+0600",
+  "generated_at": "2026-10-28T04:27:39+0600",
   "personas": {
     "amp": {
       "meta": {
@@ -1618,7 +1618,7 @@
     }
   },
   "state": {
-    "active": "antigravity",
+    "active": null,
     "prev": null,
     "history": [
       {
@@ -1805,6 +1805,139 @@
       "event": "switch",
       "from": null,
       "to": "antigravity"
+    },
+    {
+      "ts": "2026-10-28T04:14:27+0600",
+      "event": "snapshot",
+      "file": "/data/data/com.termux/files/home/Projects/agent-persona-adapter/ui/public/snapshot.json",
+      "mode": "full",
+      "personas": 42
+    },
+    {
+      "ts": "2026-10-28T04:14:27+0600",
+      "event": "snapshot",
+      "file": "/data/data/com.termux/files/usr/tmp/opencode/snap-public.json",
+      "mode": "public",
+      "personas": 42
+    },
+    {
+      "ts": "2026-10-28T04:14:27+0600",
+      "event": "clear",
+      "from": "antigravity"
+    },
+    {
+      "ts": "2026-10-28T04:21:45+0600",
+      "event": "session_use",
+      "session": "demo"
+    },
+    {
+      "ts": "2026-10-28T04:21:53+0600",
+      "event": "switch",
+      "from": null,
+      "to": "opencode"
+    },
+    {
+      "ts": "2026-10-28T04:21:53+0600",
+      "event": "session_use",
+      "session": "default"
+    },
+    {
+      "ts": "2026-10-28T04:21:53+0600",
+      "event": "session_use",
+      "session": "demo"
+    },
+    {
+      "ts": "2026-10-28T04:21:53+0600",
+      "event": "switch",
+      "from": "opencode",
+      "to": "claude-code"
+    },
+    {
+      "ts": "2026-10-28T04:21:54+0600",
+      "event": "clear",
+      "from": "claude-code"
+    },
+    {
+      "ts": "2026-10-28T04:21:54+0600",
+      "event": "patch",
+      "from": null,
+      "to": "antigravity",
+      "note": "ui test"
+    },
+    {
+      "ts": "2026-10-28T04:21:54+0600",
+      "event": "patch",
+      "from": "antigravity",
+      "to": null,
+      "note": ""
+    },
+    {
+      "ts": "2026-10-28T04:22:06+0600",
+      "event": "switch",
+      "from": null,
+      "to": "codex-cli"
+    },
+    {
+      "ts": "2026-10-28T04:22:06+0600",
+      "event": "switch",
+      "from": "codex-cli",
+      "to": "codex-cli"
+    },
+    {
+      "ts": "2026-10-28T04:22:06+0600",
+      "event": "clear",
+      "from": "codex-cli"
+    },
+    {
+      "ts": "2026-10-28T04:22:06+0600",
+      "event": "switch",
+      "from": null,
+      "to": "codex-cli"
+    },
+    {
+      "ts": "2026-10-28T04:22:07+0600",
+      "event": "clear",
+      "from": "codex-cli"
+    },
+    {
+      "ts": "2026-10-28T04:22:14+0600",
+      "event": "blend",
+      "a": "claude-code",
+      "b": "cursor-agent",
+      "id": "blend-claude-code-cursor-agent",
+      "weights": [
+        0.6,
+        0.4
+      ]
+    },
+    {
+      "ts": "2026-10-28T04:22:14+0600",
+      "event": "ab",
+      "a": "antigravity",
+      "b": "codex-cli",
+      "dir": "/data/data/com.termux/files/usr/tmp/abtest"
+    },
+    {
+      "ts": "2026-10-28T04:22:14+0600",
+      "event": "ab_result",
+      "a": "antigravity",
+      "b": "codex-cli",
+      "winner": "antigravity",
+      "note": "better toolchain fit"
+    },
+    {
+      "ts": "2026-10-28T04:22:51+0600",
+      "event": "revert",
+      "id": "blend-claude-code-cursor-agent",
+      "to": "f7ce85c5e4bf",
+      "from": "ecca104e1436"
+    },
+    {
+      "ts": "2026-10-28T04:22:51+0600",
+      "event": "snapshot",
+      "file": "/data/data/com.termux/files/usr/tmp/snap.json",
+      "mode": "full",
+      "personas": 43
     }
   ]
 }

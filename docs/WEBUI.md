@@ -229,3 +229,26 @@ Deploy: `gh-pages` branch or Cloudflare Pages (both free, static-only).
 **Recommendation**: build UI once in serverless mode first (no pip, no
 daemon, LMK-immune, deployable to Pages for the catalog), then layer the
 FastAPI mount as the "full cockpit" on-device. One codebase, both worlds.
+
+---
+
+## 9. Implemented form (v2.0.0) — deviation record
+
+**What shipped differs from §2/§6/§8 build stack. Same screens, same API
+map, same dual-mode semantics — different toolchain.** Recorded here per
+the evidence-first rule; §2/§6 remain the original v1 design.
+
+| Aspect | v1 blueprint (§2/§6) | **Built (v2.0.0)** | Why |
+|---|---|---|---|
+| Backend | FastAPI + uvicorn (pip) | **stdlib `http.server`** (`server/serve.py`) | zero-dep doctrine; no pip on device; ThreadingHTTPServer + `apa.py` imported as module |
+| Frontend | React (Vite build) | **vanilla JS SPA** (`ui/app.js`, no build step) | no npm/node build chain; loads from `file://` and any static host instantly |
+| Fuzzy resolve | Pyodide or drift | **JS port of difflib recursive longest-match**, golden-tested 43/43 vs Python | Pyodide rejected (LMK); port verified, not assumed |
+| Hashes | — | **SubtleCrypto SHA-256** → byte-identical `sha256_12` (verified vs Python) | provenance verifiable in-browser |
+| `.apa` export | fflate | **JS ustar TAR writer + `CompressionStream('gzip')`** | plain-tar/gz bundles `apa.py import` accepts (roundtrip-tested) |
+| LMK guard | `pmc status` probe | `/proc/meminfo` MemAvailable read (refuse < 1 GB, `--no-guard` flag) | stdlib-only, no polymath-core dependency |
+| Serverless state | IndexedDB | IndexedDB (virtual-state overlay) | unchanged from blueprint |
+
+Everything else matches the blueprint: 5 screens, `/api/*` map 1:1 with
+CLI, feature-detect live-vs-snapshot boot, drag-drop snapshot re-sync,
+artifact mutations with printed apply lines, `--public` edge-catalog
+variant, localhost-only bind.

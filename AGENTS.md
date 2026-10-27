@@ -65,16 +65,26 @@ agent-persona-adapter/
 ├── skills/
 │   └── APA/SKILL.md             ← canonical skill definition
 ├── scripts/
-│   ├── apa.py                   ← core resolver + state CLI
+│   ├── apa.py                   ← core resolver + state CLI (27 commands)
 │   ├── register.py              ← universal native-surface registrar
 │   └── ingest.py                ← ref-repo → personas builder
-├── personas/                    ← generated persona payloads (31 agents)
-│   └── <id>/{PERSONA.md,SOURCE.json}
+├── server/
+│   └── serve.py                 ← stdlib cockpit server (LMK guard, :8787)
+├── ui/
+│   ├── index.html               ← SPA shell (5 screens, hash-routed)
+│   ├── styles.css               ← dark cockpit theme
+│   ├── app.js                   ← dual-mode engine (live/snapshot, no deps)
+│   └── public/snapshot.{json,js} ← embedded data plane (apa.py snapshot --js)
+├── personas/                    ← generated persona payloads (42 agents)
+│   └── <id>/{PERSONA.md,SOURCE.json,versions/}
 ├── registry/
-│   ├── agents.json              ← id/alias → persona index
-│   └── registrations.json       ← pre-registration map (24 targets)
+│   ├── agents.json              ← id/alias → persona index (generated)
+│   ├── custom.json              ← user customs + blends (shadows generated)
+│   └── registrations.json       ← pre-registration map (22 targets)
 └── state/
-    ├── active.json              ← current session persona
+    ├── active.json              ← default-session persona
+    ├── sessions/<name>.json     ← named sessions
+    ├── current-session          ← session pointer
     └── audit.log                ← append-only switch trail
 ```
 
@@ -133,7 +143,26 @@ python3 scripts/apa.py import f.apa --as <newid>
 
 # Serverless-UI data plane (docs/WEBUI.md §8)
 python3 scripts/apa.py snapshot                    # full -> ui/public/snapshot.json
+python3 scripts/apa.py snapshot --js               # + snapshot.js for file:// use
 python3 scripts/apa.py snapshot --public -o cat.json  # edge catalog (no state/audit)
+
+# Named sessions (cross-session persistence)
+python3 scripts/apa.py session list|use <name>|current|export|import
+python3 scripts/apa.py resume [--yes|--no]         # re-activate stored persona
+echo '{"active":"claude-code"}' | python3 scripts/apa.py apply-patch -
+
+# Advanced (v2.0)
+python3 scripts/apa.py stats [--json]              # analytics from audit trail
+python3 scripts/apa.py suggest "<task text>"       # deterministic persona recommend
+python3 scripts/apa.py blend <a> <b> --weights 0.6,0.4 --confirm
+python3 scripts/apa.py ab --a <x> --b <y> --task "..."   # eval kit
+python3 scripts/apa.py ab-record <x> <y> --winner <id>
+python3 scripts/apa.py history <id>                # versioned copies
+python3 scripts/apa.py revert <id> <sha>
+
+# Web UI cockpit (zero-dep, dual-mode)
+python3 server/serve.py                            # LIVE mode on 127.0.0.1:8787
+                                                   # (LMK guard; --no-guard to skip)
 
 # --- universal registrar (native surfaces) ---
 # List registration targets (22 agents)

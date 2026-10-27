@@ -74,45 +74,90 @@
 
 ---
 
-## Phase 4 — Web UI ⬜ (v2.0.0)
+## Phase 4 — Web UI ✅ (v2.0.0, 2026-10-28)
 
-- [ ] FastAPI backend (`/api/personas`, `/api/switch`, `/api/status`)
-- [ ] React frontend (persona grid, search, activate button)
-- [ ] Real-time state indicator (active persona badge)
-- [ ] Session viewer (see loaded personas across sessions)
-- [ ] Persona diff tool (compare two personas side-by-side)
+**Built as zero-dep dual-mode SPA** (deviation from the FastAPI+React v1
+blueprint — see `docs/WEBUI.md` §9; vanilla JS + stdlib `http.server`,
+no npm, no pip, LMK-immune).
 
-**Exit criteria**: Browser-based persona management, CLI still works
+- [x] `server/serve.py` — stdlib ThreadingHTTPServer on 127.0.0.1:8787,
+  imports `apa.py` as module (single source of truth), LMK guard
+  (refuses <1 GB MemAvailable, `--no-guard` escape), SPA fallback
+- [x] API routes (verified by urllib suite): /api/state, /api/personas
+  (?tag=, ?q=), /api/personas/<id> (payload+source+versions), /api/switch,
+  /api/clear, /api/audit, /api/stats, /api/registrations, /api/sessions,
+  /api/export/<id> (.apa gzip bundle); every mutation returns its `cli:` string
+- [x] 5-screen vanilla SPA (`ui/index.html` + `styles.css` + `app.js`):
+  cockpit (active banner + SUPPRESSED badge + quick-switch + HUD),
+  personas grid (tag/vendor/text filter + drawer inspector + export),
+  registrations matrix (personas × surfaces), audit timeline + bar stats,
+  editor (split author/preview + 24 KB cap meter + sha256_12 via SubtleCrypto)
+- [x] Dual-mode boot: feature-detect `/api/state` → LIVE; else SNAPSHOT
+  (embedded `public/snapshot.js`, drag-drop re-sync, IndexedDB virtual state,
+  mutations = clipboard payload + downloadable artifacts)
+- [x] JS logic parity golden-tested vs Python: resolver 43/43 (difflib
+  recursive longest-match port, cutoff 0.72), sha256_12 byte-identical,
+  JS ustar+gzip writer produces bundles `apa.py import` accepts (roundtrip)
+
+**Exit criteria**: ✅ Browser cockpit (live + file://), CLI untouched
 
 ---
 
-## Phase 5 — Cross-Session Persistence ⬜ (v2.1.0)
+## Phase 5 — Cross-Session Persistence ✅ (v2.0.0, 2026-10-28)
 
-- [ ] Explicit consent flow for persistence ("Save persona for future sessions?")
-- [ ] Multiple named sessions ("work", "personal", "project-X")
-- [ ] Session switching (`apa.py session switch work`)
-- [ ] Export session history (which personas used when)
-- [ ] Integration with `polymath-core` session tracker (`pm log`)
+- [x] Named sessions: `apa.py session list|use|current|export|import`
+  (`state/sessions/<name>.json`, pointer `state/current-session`, default
+  session keeps legacy `state/active.json` path — zero migration)
+- [x] `apa.py resume` — re-activates the stored persona for a new host
+  session (`--yes`/`--no`, interactive prompt exits 3 for host agents to
+  relay); clears gracefully if the persona left the registry
+- [x] `apa.py apply-patch <state-patch.json|->` — serverless-UI state
+  artifact applier (validates persona exists, audits, `via: patch` history)
+- [x] Export/import session JSON (backup or move across devices)
+- [x] Cockpit sessions panel (live switching via POST /api/session/use)
 
-**Exit criteria**: Named sessions, persistence with consent, audit trail
+**Deviations (honest)**: explicit consent flow replaced by the patch
+protocol (mutations from untrusted surfaces must be applied consciously);
+`polymath-core` `pm log` integration deferred to backlog.
+
+**Exit criteria**: ✅ Named sessions + resume + patch, audit trail per session
 
 ---
 
-## Phase 6 — Advanced Features ⬜ (v3.0.0)
+## Phase 6 — Advanced Features ✅ (v2.0.0, 2026-10-28)
 
-- [ ] Persona blending (with explicit warnings about incoherence)
-- [ ] A/B testing (run same task under two personas, compare output)
-- [ ] Persona analytics (which personas used most, session durations)
-- [ ] ML-based persona recommendation (suggest persona based on task type)
-- [ ] Cross-device sync (encrypted persona bundle sync via GitHub)
+- [x] Persona blending: `apa.py blend <a> <b> [--weights 0.7,0.3]
+  [--confirm]` — refuses without `--confirm` (coherence-risk gate), unions
+  capability tags, registers as `blend-*` custom persona
+- [x] A/B testing: `apa.py ab --a x --b y --task "..."` writes an eval kit
+  (2 paste-ready briefs + README protocol + 5-axis scorecard incl. FLOOR
+  compliance); `apa.py ab-record x y --winner z --note "..."` → audit
+- [x] Analytics: `apa.py stats [--json]` — switches/clears/floor_overrides,
+  most-switched personas, tag-usage, switches-per-day (ASCII bars); same
+  data powers the cockpit /audit screen via /api/stats
+- [x] Task-based recommendation: `apa.py suggest "<task text>"` — lexicon
+  (LEXICON map) → capability-tag scoring + alias/vendor hits, ranked with
+  reasons (deliberately NOT ML — deterministic, auditable, offline)
+- [x] Persona versioning: `apa.py edit` versions the pre-edit payload
+  (content-addressed `versions/<sha>.md`); `apa.py history <id>` lists;
+  `apa.py revert <id> <sha>` restores (re-verions current, updates sha
+  + SOURCE.json + registry shadow)
+- [x] Editor screen in cockpit emits versioned `.apa` bundles (real
+  sha256_12 computed in-browser via SubtleCrypto)
 
-**Exit criteria**: Advanced persona orchestration, analytics dashboard
+**Deviations (honest)**: ML recommendation replaced by deterministic lexicon
+scoring (offline, zero-dep, explainable); cross-device sync = `.apa` bundles
++ serverless deploy (no encrypted sync service — out of scope, see backlog).
+
+**Exit criteria**: ✅ Blend/AB/stats/suggest/versioning + cockpit parity
 
 ---
 
 ## Backlog (Unscheduled)
 
-- [ ] Persona versioning (track persona changes over time)
+- [x] Persona versioning — **done in Phase 6** (history/revert)
+- [ ] `polymath-core` session tracker integration (`pm log` / `pmc events`)
+- [ ] Encrypted cross-device sync service (current: `.apa` bundles + serverless deploy)
 - [ ] Team sharing (multi-user registry with auth)
 - [ ] Plugin system (persona providers as plugins)
 - [ ] Voice persona (text-to-speech with persona-specific voice)

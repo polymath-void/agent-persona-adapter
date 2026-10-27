@@ -1,6 +1,6 @@
 # APA state (session-scoped, not versioned)
-state/active.json
-state/audit.log
+state/*
+!state/.gitkeep
 
 # Python
 __pycache__/

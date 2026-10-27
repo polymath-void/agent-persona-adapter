@@ -82,12 +82,25 @@ def _registry_source(pid: str) -> Path:
     return CUSTOM_REGISTRY if pid in custom else REGISTRY
 
 
+SESSIONS_DIR = STATE_DIR / "sessions"
+CURRENT_SESSION = STATE_DIR / "current-session"
+
+
+def _current_session_name() -> str:
+    return _read_json(CURRENT_SESSION, {"session": "default"}).get("session", "default")
+
+
+def _state_file() -> Path:
+    name = _current_session_name()
+    return SESSION_STATE if name == "default" else SESSIONS_DIR / f"{name}.json"
+
+
 def _write_state(st: dict) -> None:
-    _write_json(SESSION_STATE, st)
+    _write_json(_state_file(), st)
 
 
 def _read_state() -> dict:
-    st = _read_json(SESSION_STATE, {"active": None, "prev": None, "history": []})
+    st = _read_json(_state_file(), {"active": None, "prev": None, "history": []})
     st.setdefault("history", [])
     return st
 
@@ -347,6 +360,12 @@ def cmd_edit(args) -> int:
         print("apa: no changes")
         return 0
 
+    # Phase 6: version the pre-edit payload (content-addressed)
+    vdir = pfile.parent / "versions"
+    old_sha = _sha(before)
+    vdir.mkdir(exist_ok=True)
+    (vdir / f"{old_sha}.md").write_text(before, encoding="utf-8")
+
     # refresh sha + provenance
     digest = _sha(after)
     src = _split_persona(after)[0]
@@ -413,7 +432,7 @@ def cmd_import(args) -> int:
         print(f"apa: bundle not found: {bundle}", file=sys.stderr)
         return 2
     try:
-        with tarfile.open(bundle, "r:gz") as tf:
+        with tarfile.open(bundle, "r:*") as tf:  # gz or plain tar (JS exports plain tar)
             names = tf.getnames()
             if "PERSONA.md" not in names:
                 print("apa: invalid bundle (no PERSONA.md)", file=sys.stderr)
@@ -500,9 +519,431 @@ def cmd_snapshot(args) -> int:
     out = Path(args.output) if args.output else ROOT / "ui" / "public" / "snapshot.json"
     _write_json(out, snap)
     mode = "public" if args.public else "full"
+    js_note = ""
+    if getattr(args, "js", False):
+        # file:// cannot fetch() local JSON (CORS) — emit a script-tag variant
+        js_out = out.with_suffix(".js")
+        js_out.write_text("window.APA_DATA = " + json.dumps(snap, ensure_ascii=False) + ";\n",
+                          encoding="utf-8")
+        js_note = f", js={js_out.name} ({js_out.stat().st_size} bytes)"
     _audit("snapshot", {"file": str(out), "mode": mode, "personas": len(personas)})
     print(f"apa: snapshot ({mode}) -> {out} ({out.stat().st_size} bytes, "
-          f"{len(personas)} personas)")
+          f"{len(personas)} personas){js_note}")
+    return 0
+
+
+# --- Phase 5: named sessions, resume, patches ---------------------------
+def cmd_session(args) -> int:
+    SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
+    if args.action == "list":
+        cur = _current_session_name()
+        print(f"APA sessions (current: {cur})\n")
+        rows = [("default", SESSION_STATE)]
+        rows += [(p.stem, p) for p in sorted(SESSIONS_DIR.glob("*.json"))]
+        for name, p in rows:
+            st = _read_json(p, {"active": None})
+            mark = "*" if name == cur else " "
+            print(f" {mark} {name:<16} active={st.get('active') or '-':<14} {p}")
+        return 0
+    if args.action == "current":
+        st = _read_state()
+        print(f"session: {_current_session_name()}  active={st.get('active') or '-'}")
+        return 0
+    if args.action == "use":
+        name = args.name.strip().lower()
+        if not re.fullmatch(r"[a-z0-9][a-z0-9._-]*", name):
+            print(f"apa: invalid session name '{name}'", file=sys.stderr)
+            return 2
+        f = SESSION_STATE if name == "default" else SESSIONS_DIR / f"{name}.json"
+        if not f.exists():
+            _write_json(f, {"active": None, "prev": None, "history": []})
+        _write_json(CURRENT_SESSION, {"session": name, "since": time.strftime("%Y-%m-%dT%H:%M:%S%z")})
+        _audit("session_use", {"session": name})
+        print(f"apa: switched to session '{name}' "
+              f"(active={_read_json(f, {}).get('active') or '-'})")
+        return 0
+    if args.action == "export":
+        name = args.name or _current_session_name()
+        f = SESSION_STATE if name == "default" else SESSIONS_DIR / f"{name}.json"
+        if not f.exists():
+            print(f"apa: session '{name}' not found", file=sys.stderr)
+            return 2
+        out = Path(args.output) if args.output else Path(f"{name}.session.json")
+        out.write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
+        print(f"apa: exported session '{name}' -> {out}")
+        return 0
+    if args.action == "import":
+        src = Path(args.file)
+        if not src.exists():
+            print(f"apa: file not found: {src}", file=sys.stderr)
+            return 2
+        try:
+            data = json.loads(src.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            print("apa: invalid session json", file=sys.stderr)
+            return 2
+        name = (args.as_name or src.stem.replace(".session", "")).strip().lower()
+        _write_json(SESSIONS_DIR / f"{name}.json", data)
+        print(f"apa: imported session '{name}' (active={data.get('active') or '-'})")
+        return 0
+    return 2
+
+
+def cmd_resume(args) -> int:
+    st = _read_state()
+    active = st.get("active")
+    if not active:
+        print("apa: nothing to resume (no active persona)")
+        return 0
+    reg = _load_registry()
+    if active not in reg["agents"]:
+        print(f"apa: stored persona '{active}' no longer in registry; clearing")
+        st["active"] = None
+        _write_state(st)
+        return 1
+    if args.yes:
+        args.name, args.verbose = active, False
+        return cmd_switch(args)
+    if args.no:
+        return cmd_clear(args)
+    print(f"[APA] Session '{_current_session_name()}' has persona '{active}' active.")
+    print(f"[APA] Resume '{active}' persona? (y/n)  — or run: apa.py resume --yes|--no")
+    return 3
+
+
+def cmd_apply_patch(args) -> int:
+    raw = sys.stdin.read() if args.file == "-" else Path(args.file).read_text(encoding="utf-8")
+    try:
+        patch = json.loads(raw)
+    except json.JSONDecodeError:
+        print("apa: invalid patch json", file=sys.stderr)
+        return 2
+    target = patch.get("active")
+    if target is not None and target not in _load_registry()["agents"]:
+        print(f"apa: patch references unknown persona '{target}'", file=sys.stderr)
+        return 2
+    st = _read_state()
+    prev = st.get("active")
+    st["prev"] = prev
+    st["active"] = target
+    st["activated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    st["history"].append({"from": prev, "to": target, "ts": st["activated_at"],
+                          "via": "patch"})
+    _write_state(st)
+    _audit("patch", {"from": prev, "to": target, "note": patch.get("note", "")})
+    if target:
+        print(f"apa: patch applied — session '{_current_session_name()}' "
+              f"active={target} (was {prev or '-'})")
+    else:
+        print(RESTORE_ON)
+        print(f"apa: patch applied — persona cleared (was {prev or '-'}); host restored")
+    return 0
+
+
+# --- Phase 6: stats, suggest, blend, AB, versioning ----------------------
+def cmd_stats(args) -> int:
+    reg = _load_registry()["agents"]
+    events: list = []
+    if AUDIT.exists():
+        for ln in AUDIT.read_text(encoding="utf-8").splitlines():
+            try:
+                events.append(json.loads(ln))
+            except json.JSONDecodeError:
+                continue
+    switches = [e for e in events if e.get("event") == "switch"]
+    per_pid: dict = {}
+    for e in switches:
+        per_pid[e["to"]] = per_pid.get(e["to"], 0) + 1
+    tag_use: dict = {}
+    for pid, n in per_pid.items():
+        for t in reg.get(pid, {}).get("tags", []):
+            tag_use[t] = tag_use.get(t, 0) + n
+    days: dict = {}
+    for e in switches:
+        d = e.get("ts", "")[:10]
+        days[d] = days.get(d, 0) + 1
+    overrides = sum(1 for e in events if e.get("event") == "floor_override")
+    clears = sum(1 for e in events if e.get("event") in ("clear", "patch") and e.get("to", "x") is None)
+
+    def bar(label: str, n: int, mx: int, width: int = 24) -> str:
+        w = int(n / mx * width) if mx else 0
+        return f"  {label:<16} {n:>4}  {'█' * w}"
+
+    print(f"APA stats — {len(events)} audit events, session '{_current_session_name()}'\n")
+    print(f"switches: {len(switches)}   clears: {clears}   "
+          f"floor_overrides: {overrides} (target: 0)")
+    if per_pid:
+        top = sorted(per_pid.items(), key=lambda x: -x[1])[:8]
+        mx = top[0][1]
+        print("\nmost-switched personas:")
+        for pid, n in top:
+            print(bar(pid, n, mx))
+    if tag_use:
+        tt = sorted(tag_use.items(), key=lambda x: -x[1])[:8]
+        mx = tt[0][1]
+        print("\nusage by capability tag:")
+        for t, n in tt:
+            print(bar(t, n, mx))
+    if days:
+        last = sorted(days.items())[-7:]
+        mx = max(n for _, n in last)
+        print("\nswitches/day (last 7 active days):")
+        for d, n in last:
+            print(bar(d, n, mx))
+    if args.json:
+        print(json.dumps({"switches": per_pid, "tags": tag_use, "days": days,
+                          "floor_overrides": overrides}, indent=2))
+    return 0
+
+
+LEXICON: dict[str, list[str]] = {
+    "test": ["tdd"], "tests": ["tdd"], "pytest": ["tdd"], "jest": ["tdd"],
+    "tdd": ["tdd"], "unittest": ["tdd"],
+    "browser": ["browser"], "web": ["browser"], "chrome": ["browser"],
+    "scrape": ["browser"], "shopping": ["browser"],
+    "ios": ["ios"], "swift": ["ios"], "xcode": ["ios", "macos"], "macos": ["macos"],
+    "react": ["react"], "ui": ["ui"], "frontend": ["react", "ui"],
+    "vercel": ["v0"], "v0": ["v0"], "supabase": ["supabase"],
+    "docs": ["docs"], "notion": ["docs"], "write": ["docs"],
+    "research": ["research"], "search": ["research"], "citation": ["research"],
+    "spec": ["spec-driven"], "planning": ["planning"], "plan": ["planning"],
+    "architect": ["architect", "planning"],
+    "autonomous": ["autonomous"], "agent": ["agent"],
+    "terminal": ["terminal"], "cli": ["terminal"], "shell": ["terminal"],
+    "vscode": ["vscode"], "ide": ["ide"], "jetbrains": ["jetbrains"],
+    "kotlin": ["kotlin"], "debug": ["debugging"],
+    "aws": ["aws"], "gcp": ["gcp"], "vertex": ["vertex"],
+    "saas": ["saas"], "no-code": ["no-code"], "clone": ["clone"],
+    "privacy": ["privacy"], "voice": ["voice"], "realtime": ["realtime"],
+    "stealth": ["stealth"], "open-weight": ["open-weight"],
+    "modes": ["modes"], "context": ["codebase-context"], "review": ["pr-review"],
+    "deploy": ["deploy"], "fullstack": ["fullstack"],
+}
+
+
+def cmd_suggest(args) -> int:
+    reg = _load_registry()["agents"]
+    q = args.text.lower()
+    wanted: dict = {}
+    for kw, tags in LEXICON.items():
+        if kw in q:
+            for t in tags:
+                wanted[t] = wanted.get(t, 0) + 2
+    scores: dict = {}
+    reasons: dict = {}
+    for pid, e in reg.items():
+        s = 0.0
+        rs = []
+        for alias in [pid] + e.get("aliases", []):
+            if alias and alias.lower() in q:
+                s += 3
+                rs.append(f"alias '{alias}' in text")
+                break
+        if e.get("vendor", "").lower() in q and len(e.get("vendor", "")):
+            s += 2
+            rs.append(f"vendor {e['vendor']}")
+        for t in e.get("tags", []):
+            if t in wanted:
+                s += wanted[t]
+                rs.append(f"tag {t}")
+        if s > 0:
+            scores[pid] = s
+            reasons[pid] = rs
+    if not scores:
+        print("apa: no confident match — try `apa.py list --tag <cap>` or `search <q>`")
+        return 1
+    top = sorted(scores.items(), key=lambda x: -x[1])[:5]
+    print(f"APA suggest for: \"{args.text}\"\n")
+    for pid, s in top:
+        e = reg[pid]
+        print(f"  {pid:<16} score={s:.0f}  {e.get('vendor','?')}")
+        print(f"    why: {', '.join(reasons[pid][:4])}")
+    print(f"\nactivate: apa.py switch {top[0][0]}")
+    return 0
+
+
+def _persona_head(pid: str) -> str:
+    """Persona body before the ADAPTER FLOOR (persona-only section)."""
+    text = persona_path(pid).read_text(encoding="utf-8")
+    return text.split("## ADAPTER FLOOR")[0].strip()
+
+
+def cmd_blend(args) -> int:
+    reg = _load_registry()["agents"]
+    ra, ea = resolve(args.a, {"agents": reg, "_custom_ids": set()})
+    rb, eb = resolve(args.b, {"agents": reg, "_custom_ids": set()})
+    if not ra or not rb:
+        missing = args.a if not ra else args.b
+        print(f"apa: no persona matches '{missing}'", file=sys.stderr)
+        return 2
+    if ra == rb:
+        print("apa: blend needs two different personas", file=sys.stderr)
+        return 2
+    wa, wb = 0.5, 0.5
+    if args.weights:
+        try:
+            wa, wb = (float(x) for x in args.weights.split(","))
+        except ValueError:
+            print("apa: --weights must be like 0.7,0.3", file=sys.stderr)
+            return 2
+    if not args.confirm:
+        print("apa: BLENDING PRODUCES COHERENCE RISK — persona tone/toolchains mix.")
+        print(f"apa: would create blend-{ra}-{rb} (weights {wa:.2f}/{wb:.2f}).")
+        print("apa: re-run with --confirm to proceed.")
+        return 2
+
+    pid = re.sub(r"[^a-z0-9._-]+", "-", f"blend-{ra}-{rb}").strip("-")[:48]
+    if persona_path(pid).exists():
+        print(f"apa: '{pid}' already exists — pick other personas or remove it", file=sys.stderr)
+        return 2
+    head_a = _persona_head(ra)
+    head_b = _persona_head(rb)
+    tags = sorted(set(reg[ra].get("tags", []) + reg[rb].get("tags", []) + ["blend"]))
+    body = (
+        "---\n"
+        f"id: {pid}\n"
+        "vendor: Blend\n"
+        "family: blend\n"
+        f"source: blend({ra}:{wa:.2f}, {rb}:{wb:.2f})\n"
+        f"sha256_12: pending\n"
+        f"invocations: ['{pid}']\n"
+        "---\n\n"
+        f"# PERSONA: {pid} (Blend)\n\n"
+        "## IDENTITY\n"
+        f"This is a SYNTHESIZED blend of **{ra}** ({wa:.0%}) and **{rb}** ({wb:.0%})."
+        " Where the two halves conflict, follow the higher-weight half."
+        " Coherence is not guaranteed — prefer this only for experiments.\n\n"
+        f"## HALF A — {ra} ({wa:.0%})\n\n{head_a.split(chr(10) * 2, 1)[-1]}\n\n"
+        f"## HALF B — {rb} ({wb:.0%})\n\n{head_b.split(chr(10) * 2, 1)[-1]}\n"
+        + FLOOR_TEMPLATE
+    )
+    body = body.replace("sha256_12: pending", f"sha256_12: {_sha(body)}")
+    outdir = PERSONAS / pid
+    outdir.mkdir(parents=True, exist_ok=True)
+    (outdir / "PERSONA.md").write_text(body, encoding="utf-8")
+    _write_json(outdir / "SOURCE.json", {
+        "id": pid, "source": f"blend:{ra}+{rb}", "sha256_12": _sha(body),
+        "bytes": len(body.encode()), "note": "synthesized blend (coherence risk)",
+    })
+    custom = _read_json(CUSTOM_REGISTRY, {"agents": {}})
+    custom.setdefault("agents", {})[pid] = {
+        "vendor": "Blend", "family": "blend", "aliases": [],
+        "invocations": [f"/APA {pid}"],
+        "payload": f"personas/{pid}/PERSONA.md",
+        "sha256_12": _sha(body), "tags": tags, "origin": "blend",
+    }
+    _write_json(CUSTOM_REGISTRY, custom)
+    _audit("blend", {"a": ra, "b": rb, "id": pid, "weights": [wa, wb]})
+    print(f"apa: created blend '{pid}' ({ra} {wa:.0%} + {rb} {wb:.0%}, tags: {tags})")
+    print(f"  activate: apa.py switch {pid}")
+    return 0
+
+
+def cmd_ab(args) -> int:
+    reg = _load_registry()["agents"]
+    ra, _ = resolve(args.a, {"agents": reg, "_custom_ids": set()})
+    rb, _ = resolve(args.b, {"agents": reg, "_custom_ids": set()})
+    if not ra or not rb:
+        print("apa: both --a and --b must resolve to personas", file=sys.stderr)
+        return 2
+    task = args.task.strip()
+    if not task:
+        print("apa: empty task", file=sys.stderr)
+        return 2
+    out = Path(args.output) if args.output else \
+        Path(f"apa-ab-{time.strftime('%Y%m%d-%H%M%S')}")
+    out.mkdir(parents=True, exist_ok=True)
+    checklist = (
+        "## EVAL CHECKLIST (score 1-5 each)\n"
+        "- Grounding: no fabricated paths/APIs/results\n"
+        "- Task completion: did it do what was asked\n"
+        "- Persona fidelity: tone/tools match the persona\n"
+        "- FLOOR compliance: no unsafe or unconfirmed destructive ops\n"
+        "- Economy: token/latency efficiency\n"
+    )
+    for pid in (ra, rb):
+        payload = persona_path(pid).read_text(encoding="utf-8")
+        brief = (
+            f"{SUPPRESS_ON}\n"
+            f"# A/B BRIEF — arm: {pid}\n\n"
+            f"{payload}\n\n"
+            f"## TASK\n\n{task}\n\n"
+            f"{checklist}\n"
+            f"<!-- record: apa.py ab-record {ra} {rb} --winner <{ra}|{rb}> -->\n"
+        )
+        (out / f"{pid}.brief.md").write_text(brief, encoding="utf-8")
+    (out / "README.md").write_text(
+        f"# APA A/B — {ra} vs {rb}\n\n"
+        f"Task: {task}\n\n"
+        "Protocol:\n"
+        f"1. Open TWO fresh sessions (or two different agents).\n"
+        f"2. In each, paste the contents of `<arm>.brief.md` as the session opener.\n"
+        "3. Give both arms the identical task context.\n"
+        "4. Score each with the checklist in the briefs.\n"
+        f"5. Record: `apa.py ab-record {ra} {rb} --winner <id> --note \"...\"`\n",
+        encoding="utf-8")
+    _audit("ab", {"a": ra, "b": rb, "dir": str(out)})
+    print(f"apa: A/B kit written -> {out}/ ({ra}.brief.md, {rb}.brief.md, README.md)")
+    return 0
+
+
+def cmd_ab_record(args) -> int:
+    _audit("ab_result", {"a": args.a, "b": args.b, "winner": args.winner,
+                         "note": args.note or ""})
+    print(f"apa: recorded A/B result {args.a} vs {args.b} → winner={args.winner}")
+    return 0
+
+
+def cmd_history(args) -> int:
+    reg = _load_registry()
+    pid, _ = resolve(args.name, reg)
+    if not pid:
+        print(f"apa: no persona matches '{args.name}'", file=sys.stderr)
+        return 2
+    vdir = persona_path(pid).parent / "versions"
+    cur = _sha(persona_path(pid).read_text(encoding="utf-8"))
+    print(f"APA history for '{pid}' (current sha256_12={cur})\n")
+    if not vdir.exists():
+        print("  (no prior versions — edit via `apa.py edit` to create them)")
+        return 0
+    for f in sorted(vdir.glob("*.md"), key=lambda p: p.stat().st_mtime):
+        sha = f.stem
+        mark = " (current)" if sha == cur else ""
+        stt = f.stat()
+        print(f"  {sha}  {stt.st_size:>7} B  {time.strftime('%Y-%m-%d %H:%M', time.localtime(stt.st_mtime))}{mark}")
+    print(f"\nrevert: apa.py revert {pid} <sha>")
+    return 0
+
+
+def cmd_revert(args) -> int:
+    reg = _load_registry()
+    pid, entry = resolve(args.name, reg)
+    if not pid:
+        print(f"apa: no persona matches '{args.name}'", file=sys.stderr)
+        return 2
+    pfile = persona_path(pid)
+    vfile = pfile.parent / "versions" / f"{args.sha}.md"
+    if not vfile.exists():
+        print(f"apa: version {args.sha} not found for '{pid}'", file=sys.stderr)
+        return 2
+    cur_sha = _sha(pfile.read_text(encoding="utf-8"))
+    if cur_sha == args.sha:
+        print("apa: that version is already current")
+        return 0
+    vdir = pfile.parent / "versions"
+    vdir.mkdir(exist_ok=True)
+    (vdir / f"{cur_sha}.md").write_text(pfile.read_text(encoding="utf-8"), encoding="utf-8")
+    restored = vfile.read_text(encoding="utf-8")
+    pfile.write_text(restored, encoding="utf-8")
+    new_sha = _sha(restored)
+    sp = _read_json(pfile.parent / "SOURCE.json", {"id": pid})
+    sp.update({"sha256_12": new_sha, "bytes": len(restored.encode()), "reverted_to": args.sha})
+    _write_json(pfile.parent / "SOURCE.json", sp)
+    custom = _read_json(CUSTOM_REGISTRY, {"agents": {}})
+    custom.setdefault("agents", {})[pid] = {**entry, "sha256_12": new_sha, "origin": "custom"}
+    _write_json(CUSTOM_REGISTRY, custom)
+    _audit("revert", {"id": pid, "to": args.sha, "from": cur_sha})
+    print(f"apa: reverted '{pid}' {cur_sha} -> {args.sha}")
     return 0
 
 
@@ -554,12 +995,65 @@ def main() -> int:
     p.add_argument("--public", action="store_true",
                    help="edge-catalog variant: strip state + audit_tail")
     p.add_argument("--audit", type=int, default=200, help="audit tail size (default 200)")
+    p.add_argument("--js", action="store_true",
+                   help="also emit snapshot.js (window.APA_DATA=…; for file:// use)")
+
+    p = sub.add_parser("session", help="named cross-session persistence")
+    p.add_argument("action", choices=["list", "use", "current", "export", "import"])
+    p.add_argument("name", nargs="?", help="session name (use/export) ")
+    p.add_argument("-o", "--output", help="export output path")
+    p.add_argument("-f", "--file", help="import source json")
+    p.add_argument("--as", dest="as_name", help="import: target session name")
+
+    p = sub.add_parser("resume", help="re-activate the stored persona for this session")
+    p.add_argument("--yes", action="store_true", help="resume without prompting")
+    p.add_argument("--no", action="store_true", help="clear instead of resuming")
+
+    p = sub.add_parser("apply-patch",
+                       help="apply a state-patch.json (serverless UI artifact)")
+    p.add_argument("file", help="patch json path, or '-' for stdin")
+
+    p = sub.add_parser("stats", help="usage analytics from the audit trail")
+    p.add_argument("--json", action="store_true")
+
+    p = sub.add_parser("suggest", help="recommend a persona from a task description")
+    p.add_argument("text", help="free-text task description")
+
+    p = sub.add_parser("blend", help="synthesize a blended persona (coherence risk)")
+    p.add_argument("a")
+    p.add_argument("b")
+    p.add_argument("--weights", help="like 0.7,0.3 (default 0.5,0.5)")
+    p.add_argument("--confirm", action="store_true", help="actually write the blend")
+
+    p = sub.add_parser("ab", help="generate an A/B evaluation kit for two personas")
+    p.add_argument("--a", required=True)
+    p.add_argument("--b", required=True)
+    p.add_argument("--task", required=True)
+    p.add_argument("-o", "--output", help="output dir (default apa-ab-<ts>)")
+
+    p = sub.add_parser("ab-record", help="record an A/B winner into the audit trail")
+    p.add_argument("a")
+    p.add_argument("b")
+    p.add_argument("--winner", required=True)
+    p.add_argument("--note", help="optional evaluator note")
+
+    p = sub.add_parser("history", help="list versioned copies of a persona")
+    p.add_argument("name")
+
+    p = sub.add_parser("revert", help="restore a prior persona version by sha")
+    p.add_argument("name")
+    p.add_argument("sha")
 
     args = ap.parse_args()
     fn = {"list": cmd_list, "switch": cmd_switch, "info": cmd_info,
           "clear": cmd_clear, "status": cmd_status, "search": cmd_search,
           "new": cmd_new, "edit": cmd_edit, "export": cmd_export,
-          "import": cmd_import, "snapshot": cmd_snapshot}[args.cmd]
+          "import": cmd_import, "snapshot": cmd_snapshot,
+          "session": cmd_session, "resume": cmd_resume,
+          "apply-patch": cmd_apply_patch, "stats": cmd_stats,
+          "suggest": cmd_suggest, "blend": cmd_blend,
+          "ab": cmd_ab, "ab-record": cmd_ab_record,
+          "history": cmd_history, "revert": cmd_revert}[args.cmd]
     try:
         return fn(args)
     except BrokenPipeError:

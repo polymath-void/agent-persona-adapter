@@ -53,9 +53,27 @@ python3 scripts/apa.py clear
 # Custom persona lifecycle
 python3 scripts/apa.py new my-agent --vendor Acme --family custom \
         --aliases ma --tags terminal,tdd
-python3 scripts/apa.py edit my-agent          # opens $EDITOR, refreshes sha
+python3 scripts/apa.py edit my-agent          # opens $EDITOR, versions old copy
 python3 scripts/apa.py export my-agent -o my-agent.apa
 python3 scripts/apa.py import my-agent.apa --as my-agent-v2
+python3 scripts/apa.py history my-agent       # content-addressed versions
+python3 scripts/apa.py revert my-agent <sha>
+
+# Named sessions (cross-session persistence)
+python3 scripts/apa.py session list           # * marks current
+python3 scripts/apa.py session use work       # create/switch named session
+python3 scripts/apa.py resume                 # re-activate stored persona (--yes/--no)
+echo '{"active":"claude-code"}' | python3 scripts/apa.py apply-patch -
+
+# Advanced: analytics, recommendation, blending, A/B
+python3 scripts/apa.py stats                  # switches/tags/days (ASCII bars)
+python3 scripts/apa.py suggest "write pytest tests for my CLI"
+python3 scripts/apa.py blend claude-code cursor-agent --weights 0.6,0.4 --confirm
+python3 scripts/apa.py ab --a agy --b codex --task "fix a PTY bug"
+python3 scripts/apa.py ab-record antigravity codex-cli --winner antigravity
+
+# Web UI data plane (docs/WEBUI.md)
+python3 scripts/apa.py snapshot --js          # data plane for the cockpit SPA
 
 # Rebuild personas from ref-repo (custom.json survives)
 python3 scripts/ingest.py
@@ -127,6 +145,36 @@ Every persona carries **capability tags** (`terminal`, `tdd`, `browser`,
 `apa.py search <tag>`.
 
 Full metadata: [`registry/agents.json`](registry/agents.json)
+
+---
+
+## Web UI (cockpit) — zero-dep, dual-mode
+
+A 5-screen cockpit over the same engine — **no npm, no pip, no build step**:
+
+```bash
+# LIVE mode — full cockpit on this device (stdlib http.server, localhost only)
+python3 server/serve.py                    # LMK guard: refuses < 1 GB free RAM
+termux-open-url http://127.0.0.1:8787
+
+# SNAPSHOT mode — zero daemon; open ui/index.html via file:// or any static host
+python3 scripts/apa.py snapshot --js       # regenerate ui/public/snapshot.{json,js}
+```
+
+Boot-time feature detection: `/api/state` reachable → **LIVE** (mutations hit
+real state files, every response carries its `cli:` equivalent). Unreachable →
+**SNAPSHOT** (data from embedded `snapshot.js`, drag-drop re-sync, mutations
+become clipboard payloads + downloadable artifacts you apply with the CLI).
+`--public` snapshot strips state/audit → publishable edge catalog.
+
+Screens: **Cockpit** (active persona + HOST SUPPRESSED badge, quick-switch) ·
+**Personas** (42-card grid, filters, drawer inspector, export `.apa`) ·
+**Registrations** (personas × surfaces matrix) · **Audit** (timeline + usage
+bars) · **Editor** (author custom personas, real `sha256_12` via SubtleCrypto).
+
+The JS resolver is golden-tested 43/43 against Python difflib, and
+bundles written by the JS TAR writer import cleanly via `apa.py import`.
+Spec + deviation record: [`docs/WEBUI.md`](docs/WEBUI.md).
 
 ---
 
