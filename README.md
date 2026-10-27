@@ -205,6 +205,51 @@ agent-persona-adapter/
 
 ---
 
+## Pre-registration (native surfaces)
+
+APA can push any persona into any agent's **native** registration format —
+not just the session CLI. Researched map lives in
+[`registry/registrations.json`](registry/registrations.json) +
+[`docs/REGISTRATION.md`](docs/REGISTRATION.md) (24 targets, verified flags).
+
+```bash
+# What can I register into?
+python3 scripts/register.py list
+
+# Install the claude persona as a Cursor always-on rule
+python3 scripts/register.py install claude-code --agent cursor-agent --project ~/myrepo
+#   → ~/myrepo/.cursor/rules/apa-claude-code.mdc  (alwaysApply: true)
+
+# Fill EVERY detected agent surface in a project at once
+python3 scripts/register.py install claude-code --agent auto --project ~/myrepo
+#   → .claude/skills/, .cursor/rules/, .agents/skills/, .opencode/skills/,
+#     .clinerules/, .roomodes (Roo custom mode), .devin/rules/,
+#     .kiro/steering/, .github/agents/ (Copilot), AGENTS.md block, …
+
+# Preview / audit
+python3 scripts/register.py install claude-code --agent kiro --project . --dry-run
+python3 scripts/register.py status claude-code --project ~/myrepo
+```
+
+**Native formats emitted**: agentskills.io `SKILL.md`, Cursor `.mdc`
+(alwaysApply), Roo custom modes (`.roomodes` persona mode), Copilot agent
+profiles (`.github/agents/`), Gemini extensions (`gemini-extension.json` +
+`GEMINI.md`), Antigravity plugins, Kiro steering, Junie rules, managed
+AGENTS.md blocks. All idempotent with `APA:BEGIN/END` markers.
+
+**Cloud-only agents** (lovable, bolt-new, manus, notion-ai, perplexity,
+comet, lumo, traycer, qoder): run `apa.py switch <id>` and paste the payload
+into the app's knowledge field.
+
+### Live-registered on this machine
+
+- `~/.agents/skills/APA` → `skills/APA/SKILL.md` (OpenCode + Cline + AGY)
+- `~/.gemini/config/skills/APA` → symlink (Antigravity CLI global)
+- `/APA` slash command: `~/.config/opencode/commands/apa.md` +
+  `~/Projects/.opencode/commands/apa.md`
+
+---
+
 ## Documentation map
 
 | Doc | Purpose |

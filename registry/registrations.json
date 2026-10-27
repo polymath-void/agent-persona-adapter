@@ -1,0 +1,287 @@
+{
+  "$comment": "APA pre-registration map — native skill/registration targets per agent. Researched 2026-10-28 from official docs. verified:false entries are best-effort (see source).",
+  "version": "1.0.0",
+  "standards": {
+    "agent-skills": {
+      "name": "Agent Skills (open standard)",
+      "url": "https://agentskills.io",
+      "format": "folder/<skill-name>/SKILL.md with YAML frontmatter (name, description)",
+      "adopters": ["claude-code", "opencode", "antigravity", "cline", "gemini-cli", "copilot", "codex-cli(experimental)"]
+    },
+    "agents-md": {
+      "name": "AGENTS.md (Linux Foundation AAIF)",
+      "url": "https://agents.md",
+      "format": "plain markdown at project root; global ~/.agents/AGENTS.md",
+      "adopters": ["codex-cli", "cursor-agent", "windsurf", "cline", "copilot", "junie", "kiro", "amp", "qwen-code", "augment", "roo-code"]
+    }
+  },
+  "targets": {
+    "claude-code": {
+      "agent": "claude-code",
+      "capabilities": ["skill_md", "subagent_md", "agents_md"],
+      "paths": {
+        "project_skill": ".claude/skills/<name>/SKILL.md",
+        "user_skill": "~/.claude/skills/<name>/SKILL.md",
+        "project_agents_md": "CLAUDE.md",
+        "subagent": ".claude/agents/<name>.md",
+        "commands": ".claude/commands/<name>.md"
+      },
+      "frontmatter": {"name": "<skill-name>", "description": "<one-line trigger description>"},
+      "notes": "Symlinked skill dirs supported; --add-dir loads external .claude/skills. Skills are the primary APA vehicle.",
+      "verified": true,
+      "sources": ["https://code.claude.com/docs/en/skills"]
+    },
+    "cursor-agent": {
+      "agent": "cursor-agent",
+      "capabilities": ["rule_mdc", "agents_md"],
+      "paths": {
+        "project_rule": ".cursor/rules/apa-<id>.mdc",
+        "user_rule": "~/.cursor/rules/apa-<id>.mdc",
+        "project_agents_md": "AGENTS.md"
+      },
+      "frontmatter": {"description": "APA persona: <id> — always-on behavioral takeover", "globs": ["**/*"], "alwaysApply": true},
+      "limits": {"rule_chars": "keep < 500 lines (docs best practice)"},
+      "notes": "Only .mdc extension recognized in .cursor/rules; AGENTS.md also read at root. Legacy .cursorrules still supported.",
+      "verified": true,
+      "sources": ["https://cursor.com/docs/rules"]
+    },
+    "antigravity": {
+      "agent": "antigravity",
+      "capabilities": ["skill_md", "plugin", "rules", "agents_md"],
+      "paths": {
+        "project_skill": ".agents/skills/<name>/SKILL.md",
+        "user_skill": "~/.agents/skills/<name>/SKILL.md",
+        "legacy_skill": ".agent/skills/<name>/SKILL.md",
+        "plugin": "~/.gemini/antigravity-cli/plugins/<name>/{plugin.json,skills/,agents/,rules/}",
+        "project_rules": ".agents/rules/<name>.md",
+        "project_hooks": ".agents/hooks.json",
+        "global_hooks": "~/.gemini/config/hooks.json"
+      },
+      "frontmatter": {"name": "<skill-name>", "description": "<one-line trigger description>"},
+      "notes": "Defaults to .agents/skills (backward-compat .agent/skills). Plugins staged at ~/.gemini/antigravity-cli/plugins/. Hooks: workspace .agents/hooks.json OR global ~/.gemini/config/hooks.json; both run when duplicated; global veto cannot be bypassed.",
+      "verified": true,
+      "sources": ["https://antigravity.google/docs/skills", "https://antigravity.google/docs/plugins", "https://antigravity.google/docs/hooks"]
+    },
+    "codex-cli": {
+      "agent": "codex-cli",
+      "capabilities": ["agents_md", "skill_md"],
+      "paths": {
+        "project_agents_md": "AGENTS.md",
+        "user_agents_md": "~/.codex/AGENTS.md",
+        "skill": ".agents/skills/<name>/SKILL.md"
+      },
+      "notes": "AGENTS.md anchor of the standard (OpenAI origin, Linux Foundation AAIF). Experimental Agent Skills support via agentskills.io.",
+      "verified": true,
+      "sources": ["https://agents.md", "https://codex.danielvaughan.com/2026/05/27/agent-instruction-files-agents-md-claude-md-cross-tool-portability-codex-cli"]
+    },
+    "gemini-cli": {
+      "agent": "gemini-cli",
+      "capabilities": ["extension", "agents_md", "commands_toml"],
+      "paths": {
+        "extension": "~/.gemini/extensions/apa-<id>/{gemini-extension.json,GEMINI.md,commands/,skills/}",
+        "project_context": ".gemini/GEMINI.md",
+        "user_context": "~/.gemini/GEMINI.md",
+        "commands": "~/.gemini/commands/apa/<id>.toml"
+      },
+      "extension_manifest": {"name": "apa-<id>", "version": "1.0.0", "contextFileName": "GEMINI.md"},
+      "notes": "Extensions bundle prompts/commands/themes/hooks/sub-agents/skills. gemini-extension.json required. Free tier replaced by Antigravity CLI (2026-06-18); extension path still valid for Gemini CLI users.",
+      "verified": true,
+      "sources": ["https://geminicli.com/docs/extensions/reference", "https://github.com/google-gemini/gemini-cli/blob/main/docs/extensions/writing-extensions.md"]
+    },
+    "opencode": {
+      "agent": "opencode",
+      "capabilities": ["skill_md", "command_md"],
+      "paths": {
+        "project_skill": ".opencode/skills/<name>/SKILL.md",
+        "agents_dir_skill": ".agents/skills/<name>/SKILL.md",
+        "user_skill": "~/.agents/skills/<name>/SKILL.md",
+        "global_skill": "~/.config/opencode/skills/<name>/SKILL.md",
+        "claude_compat": ".claude/skills/<name>/SKILL.md",
+        "command": ".opencode/command/<name>.md"
+      },
+      "frontmatter": {"name": "<skill-name>", "description": "<one-line trigger description>"},
+      "notes": "Discovery: .opencode/skills, .agents/skills, ~/.agents/skills, ~/.config/opencode/skills, plus Claude-compatible .claude/skills. Skills loaded on-demand via native skill tool.",
+      "verified": true,
+      "sources": ["https://opencode.ai/docs/skills"]
+    },
+    "cline": {
+      "agent": "cline",
+      "capabilities": ["rules_md", "skill_md", "agents_md"],
+      "paths": {
+        "project_rules": ".clinerules/apa-<id>.md",
+        "project_rules_alt": ".cline/rules/apa-<id>.md",
+        "user_rules": "~/.cline/rules/apa-<id>.md",
+        "user_skills": "~/.cline/skills/<name>/SKILL.md",
+        "agents_md": "AGENTS.md",
+        "global_agents_md": "~/.agents/AGENTS.md"
+      },
+      "notes": "Merges all .md/.txt in .clinerules/. Auto-detects .cursorrules, .windsurfrules, AGENTS.md, .agents/skills/. Workspace > global precedence.",
+      "verified": true,
+      "sources": ["https://docs.cline.bot/customization/cline-rules", "https://docs.cline.bot/getting-started/config"]
+    },
+    "roo-code": {
+      "agent": "roo-code",
+      "capabilities": ["rules_md", "custom_mode"],
+      "paths": {
+        "project_rules": ".roo/rules/apa.md",
+        "mode_rules": ".roo/rules-apa/<id>.md",
+        "project_modes": ".roomodes",
+        "global_rules": "~/.roo/rules/apa.md",
+        "global_modes": "~/.roo/custom_modes.yaml"
+      },
+      "mode_template": {"customModes": [{"slug": "apa-<id>", "name": "APA <id>", "description": "Session persona: <id> (<vendor>)", "roleDefinition": "<persona IDENTITY + SOURCE SYSTEM INSTRUCTIONS>", "whenToUse": "Invoke via /APA persona <id>", "groups": ["read", "edit", "command", "mcp"]}]},
+      "notes": "Custom modes are native personas (slug/roleDefinition/groups) — ideal APA vessel. Project .roomodes (JSON/YAML) or global custom_modes.yaml. Mode rules dirs: .roo/rules-{slug}/.",
+      "verified": true,
+      "sources": ["https://docs.roocode.com/features/custom-modes", "https://docs.roocode.com/advanced-usage/custom-instructions"]
+    },
+    "windsurf": {
+      "agent": "windsurf",
+      "capabilities": ["rules_md", "agents_md"],
+      "paths": {
+        "project_rules": ".devin/rules/apa-<id>.md",
+        "project_rules_fallback": ".windsurf/rules/apa-<id>.md",
+        "legacy": ".windsurfrules",
+        "user_rules": "~/.codeium/windsurf/memories/global_rules.md",
+        "agents_md": "AGENTS.md"
+      },
+      "limits": {"rule_chars": 12000, "global_chars": 6000},
+      "notes": "2026: .devin/rules/ preferred, .windsurf/rules/ fallback (Devin/Cascade). One md per rule with activation mode frontmatter. AGENTS.md = always-on global rule for directory tree.",
+      "verified": true,
+      "sources": ["https://docs.windsurf.com/windsurf/cascade/memories"]
+    },
+    "copilot": {
+      "agent": "copilot",
+      "capabilities": ["instructions_md", "prompt_md", "agent_profile", "skill_md", "agents_md"],
+      "paths": {
+        "repo_instructions": ".github/copilot-instructions.md",
+        "path_instructions": ".github/instructions/apa-<id>.instructions.md",
+        "prompt_file": ".github/prompts/apa-<id>.prompt.md",
+        "agent_profile": ".github/agents/apa-<id>.md",
+        "skill": ".github/skills/<name>/SKILL.md",
+        "agents_md": "AGENTS.md"
+      },
+      "frontmatter_agent": {"name": "apa-<id>", "description": "APA persona: <id>", "prompt": "<persona body>", "tools": ["codebase", "terminal"]},
+      "notes": "Agent profiles (YAML frontmatter: name/description/prompt/tools) are native persona vessels for Copilot CLI. .instructions.md uses applyTo globs. Prompt files (.prompt.md) are invokeable. Copilot + VS Code + CLI adopt agentskills.io.",
+      "verified": true,
+      "sources": ["https://docs.github.com/en/copilot/concepts/prompting/response-customization", "https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-custom-agents", "https://code.visualstudio.com/docs/agent-customization/agent-skills"]
+    },
+    "kiro": {
+      "agent": "kiro",
+      "capabilities": ["steering_md", "agents_md"],
+      "paths": {
+        "project_steering": ".kiro/steering/apa-<id>.md",
+        "global_steering": "~/.kiro/steering/apa-<id>.md"
+      },
+      "frontmatter": {"inclusion": "always"},
+      "inclusion_modes": ["always", "fileMatch (fileMatchPattern globs)", "manual"],
+      "notes": "Steering files auto-loaded; AGENTS.md at root or ~/.kiro/steering/ also picked up. Workspace steering overrides global.",
+      "verified": true,
+      "sources": ["https://kiro.dev/docs/steering", "https://kiro.dev/docs/web/steering/"]
+    },
+    "junie": {
+      "agent": "junie",
+      "capabilities": ["guidelines_md", "agents_md", "rules_md"],
+      "paths": {
+        "project_agents_md": ".junie/AGENTS.md",
+        "root_agents_md": "AGENTS.md",
+        "project_rules": ".junie/rules/<id>.md",
+        "legacy": ".junie/guidelines.md",
+        "memory": ".junie/memory/<id>.md",
+        "global": "~/.junie/AGENTS.md"
+      },
+      "notes": "CLI discovery order: .junie/AGENTS.md → AGENTS.md + .junie/playbook.md + .junie/rules/*.md → legacy .junie/guidelines.md. Global ~/.junie/AGENTS.md supported.",
+      "verified": true,
+      "sources": ["https://junie.jetbrains.com/docs/guidelines-and-memory.html"]
+    },
+    "devin": {
+      "agent": "devin",
+      "capabilities": ["rules_md"],
+      "paths": {
+        "project_rules": ".devin/rules/apa-<id>.md",
+        "user_rules": "~/.devin/rules/apa-<id>.md"
+      },
+      "notes": "Devin desktop shares Cascade rules engine (.devin/rules/*.md, one file per rule with activation modes).",
+      "verified": true,
+      "sources": ["https://docs.devin.ai/desktop/cascade/memories"]
+    },
+    "amp": {
+      "agent": "amp",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "AGENTS.md"},
+      "notes": "Amp reads AGENTS.md at repo root (cross-tool standard adopter).",
+      "verified": true,
+      "sources": ["https://agents.md"]
+    },
+    "qwen-code": {
+      "agent": "qwen-code",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "QWEN.md", "fallback_agents_md": "AGENTS.md"},
+      "notes": "Qwen Code follows Gemini-CLI lineage (context files); QWEN.md is its documented project context file, AGENTS.md also honored.",
+      "verified": false,
+      "sources": ["inferred from Gemini CLI lineage + AGENTS.md adopter lists"]
+    },
+    "augment": {
+      "agent": "augment",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "AGENTS.md"},
+      "notes": "Augment publishes AGENTS.md guidance (explicit commands, one source of truth).",
+      "verified": true,
+      "sources": ["https://www.augmentcode.com/guides/how-to-build-agents-md"]
+    },
+    "kilo-code": {
+      "agent": "kilo-code",
+      "capabilities": ["rules_md", "agents_md"],
+      "paths": {"project_rules": ".kilocode/rules/<id>.md", "project_agents_md": "AGENTS.md"},
+      "notes": "Kilo Code (Roo/Cline lineage) reads .kilocode/rules/ and AGENTS.md.",
+      "verified": false,
+      "sources": ["inferred from Roo/Cline lineage"]
+    },
+    "trae": {
+      "agent": "trae",
+      "capabilities": ["rules_md"],
+      "paths": {"project_rules": ".trae/rules/<id>.md", "user_rules": "~/.trae/rules/<id>.md"},
+      "notes": "Trae rule files under .trae/rules/ (project + user scope).",
+      "verified": false,
+      "sources": ["best-effort; verify against current Trae docs before production use"]
+    },
+    "warp-agent": {
+      "agent": "warp-agent",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "AGENTS.md"},
+      "notes": "AGENTS.md fallback; Warp-native workflows (.warp/workflows/*.yaml) are command templates, not persona carriers.",
+      "verified": false,
+      "sources": ["inferred from AGENTS.md adopter lists"]
+    },
+    "replit-agent": {
+      "agent": "replit-agent",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "AGENTS.md"},
+      "notes": "Cloud workspace; knowledge configured in app. AGENTS.md is the on-disk hook.",
+      "verified": false,
+      "sources": ["best-effort"]
+    },
+    "hermes": {
+      "agent": "hermes",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "AGENTS.md"},
+      "notes": "Open-weight CLI agent; AGENTS.md fallback.",
+      "verified": false,
+      "sources": ["best-effort"]
+    },
+    "mimo-code": {
+      "agent": "mimo-code",
+      "capabilities": ["agents_md"],
+      "paths": {"project_agents_md": "AGENTS.md"},
+      "notes": "MiMo Code CLI; AGENTS.md fallback.",
+      "verified": false,
+      "sources": ["best-effort"]
+    },
+    "no-filesystem": {
+      "agents": ["lovable", "bolt-new", "manus", "notion-ai", "perplexity", "comet", "lumo", "traycer", "qoder"],
+      "capability": "cloud/knowledge-base only — no on-disk registration surface",
+      "apa_vehicle": "session-scoped CLI mode: user runs `apa.py switch <id>` and pastes payload into the web app's knowledge/custom-instructions field",
+      "verified": true,
+      "sources": ["product surface review 2026-10"]
+    }
+  }
+}

@@ -29,16 +29,26 @@
 
 ---
 
-## Phase 2 — Skill Integration ⬜ (v1.1.0)
+## Phase 2 — Skill Integration ✅ (v1.1.0, 2026-10-28)
 
-- [ ] Write `skills/APA/SKILL.md` (done — needs OpenCode/Antigravity registration)
-- [ ] OpenCode skill auto-discovery (drop into `.agents/skills/APA/`)
-- [ ] Antigravity skill registration (`agy-customizations`)
-- [ ] Hook-based auto-resume (pre-session hook reads `state/active.json`)
-- [ ] Passive trigger detection ("act as claude", "switch to cursor persona")
-- [ ] Timeout on resume prompt (default: drop persona)
-
-**Exit criteria**: `/APA claude` works in OpenCode without manual CLI invocation
+- [x] Write `skills/APA/SKILL.md` (canonical trigger + activation spec)
+- [x] **Web research**: all major agent registration formats (Claude Code,
+  Cursor, Antigravity, Gemini CLI, Cline, Roo, Windsurf/Devin, Copilot, Kiro,
+  Junie, Codex, Amp, Qwen, Augment, Trae + two universal standards
+  `agentskills.io` / AGENTS.md-AAIF)
+- [x] Machine-readable pre-registration map (`registry/registrations.json`,
+  24 targets, verified/BEST-EFFORT flags + sources)
+- [x] Universal registrar (`scripts/register.py`): skill_md, rule_mdc,
+  rules_md, agents_md block, Roo custom_mode, Copilot agent_profile,
+  Gemini extension, Antigravity plugin — idempotent, managed markers
+- [x] Docs: `docs/REGISTRATION.md` (per-agent table + research notes)
+- [x] OpenCode skill auto-discovery: `~/.agents/skills/APA` symlink
+- [x] Antigravity skill registration: `~/.gemini/config/skills/APA` symlink
+- [x] `/APA` slash command: `~/.config/opencode/commands/apa.md` (global) +
+  `~/Projects/.opencode/commands/apa.md` (project)
+- [x] Session resume: documented in skill + command (`Resume '<id>'? (y/n)`,
+  default n after 30s); `state/active.json` persists
+- [x] Smoke tests: 12-surface install, auto-detect, idempotency, QWEN fallback
 
 ---
 

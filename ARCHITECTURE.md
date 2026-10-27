@@ -199,26 +199,50 @@ HOST: resume native persona
 
 ---
 
-## 5. Integration Points
+## 5. Integration Points (Pre-Registration Map)
 
-### 5.1 OpenCode Skill Auto-Discovery
-- Skill at `skills/APA/SKILL.md`
-- OpenCode discovers skills in `.agents/skills/<id>/SKILL.md` or project `skills/`
-- Once loaded, OpenCode recognizes the trigger pattern and follows the activation procedure
+Full researched map: `docs/REGISTRATION.md` + machine-readable
+`registry/registrations.json` (24 targets, ~70% verified against live docs).
 
-### 5.2 Antigravity Customization System
-- Can be registered as an Antigravity skill
-- Follows `agy-customizations` skill conventions
+### 5.1 Two Universal Standards
+- **Agent Skills** (`agentskills.io`): `<dir>/SKILL.md` + YAML frontmatter —
+  Claude Code, OpenCode, Antigravity, Cline, Gemini CLI, Copilot, Codex
+- **AGENTS.md** (Linux Foundation AAIF): root `AGENTS.md`, global
+  `~/.agents/AGENTS.md` — Codex, Cursor, Windsurf, Cline, Copilot, Junie,
+  Kiro, Amp, Qwen, Augment, Roo, Trae, Warp, Replit
 
-### 5.3 CLI-Only Mode (no skill integration)
-- Users can run `scripts/apa.py switch <agent>` manually
-- Read the printed payload, paste into any agent's context
-- Works with ANY agent that accepts system prompt injection
+### 5.2 Live-Registered Hosts (this machine)
+- `~/.agents/skills/APA` → symlink to `skills/APA/SKILL.md`
+  (OpenCode global + Cline + AGY `.agents/skills` standard)
+- `~/.gemini/config/skills/APA` → symlink (Antigravity CLI global skills)
+- `~/.config/opencode/commands/apa.md` + `~/Projects/.opencode/commands/apa.md`
+  → `/APA` slash command (global + project)
 
-### 5.4 Hook-Based Auto-Activation (optional)
-- Pre-session hook: checks `state/active.json`
-- If active persona found, prompts: *"Resume `<id>` persona? (y/n)"*
-- On `y`, auto-injects persona without user re-invoking `/APA`
+### 5.3 Universal Registrar (`scripts/register.py`)
+Pushes any persona into any agent's NATIVE surface:
+
+| Capability | Emits |
+|---|---|
+| `skill_md` | `apa-<id>/SKILL.md` (agentskills.io frontmatter) |
+| `rule_mdc` | `.cursor/rules/apa-<id>.mdc` with `alwaysApply: true` |
+| `rules_md` | `.clinerules/`, `.roo/rules/`, `.devin/rules/`, `.kiro/steering/`… |
+| `agents_md` | Managed `APA:BEGIN/END` block in AGENTS.md/CLAUDE.md/QWEN.md |
+| `custom_mode` | Roo `.roomodes` custom mode (slug/roleDefinition/groups) |
+| `agent_profile` | Copilot `.github/agents/apa-<id>.md` |
+| `extension` | Gemini `gemini-extension.json` + `GEMINI.md` |
+| `plugin` | Antigravity plugin bundle (`plugin.json` + `skills/`) |
+
+All writes are idempotent (managed markers, no duplication, no clobber).
+
+### 5.4 CLI-Only Mode (no skill integration)
+- `scripts/apa.py switch <agent>` → paste stdout into ANY agent's context
+- Works with cloud-only agents (lovable, bolt-new, manus, notion-ai,
+  perplexity, comet, lumo, traycer, qoder) via their knowledge fields
+
+### 5.5 Session Resume
+- `state/active.json` persists across sessions
+- On session start with active persona: prompt *"Resume `<id>`? (y/n)"*,
+  default **n** after 30s (fail-safe)
 
 ---
 

@@ -46,7 +46,8 @@ agent-persona-adapter/
 │   ├── TRD.md                   ← technical requirements doc
 │   ├── PLAN.md                  ← phased implementation checklist
 │   ├── APPFLOW.md               ← state machine / invocation flow
-│   └── SCHEMA.md                ← registry + state schemas
+│   ├── SCHEMA.md                ← registry + state schemas
+│   └── REGISTRATION.md          ← pre-registration map (all ecosystems)
 ├── policy/
 │   ├── PERSONA_POLICY.md        ← legal/provenance/consent policy
 │   └── SAFETY.md                ← safety rails & destructive-op gates
@@ -65,15 +66,22 @@ agent-persona-adapter/
 │   └── APA/SKILL.md             ← canonical skill definition
 ├── scripts/
 │   ├── apa.py                   ← core resolver + state CLI
+│   ├── register.py              ← universal native-surface registrar
 │   └── ingest.py                ← ref-repo → personas builder
 ├── personas/                    ← generated persona payloads (31 agents)
 │   └── <id>/{PERSONA.md,SOURCE.json}
 ├── registry/
-│   └── agents.json              ← id/alias → persona index
+│   ├── agents.json              ← id/alias → persona index
+│   └── registrations.json       ← pre-registration map (24 targets)
 └── state/
     ├── active.json              ← current session persona
     └── audit.log                ← append-only switch trail
 ```
+
+**Live host registrations** (this machine):
+- `~/.agents/skills/APA` → symlink to `skills/APA/` (OpenCode + Cline + AGY)
+- `~/.gemini/config/skills/APA` → symlink (Antigravity CLI global)
+- `~/.config/opencode/commands/apa.md` + `~/Projects/.opencode/commands/apa.md`
 
 ---
 
@@ -112,6 +120,20 @@ python3 scripts/apa.py clear
 
 # Fuzzy search
 python3 scripts/apa.py search cursor
+
+# --- universal registrar (native surfaces) ---
+# List registration targets (24 agents)
+python3 scripts/register.py list
+
+# Install persona into one agent's native format
+python3 scripts/register.py install claude-code --agent cursor-agent --project /path/to/repo
+
+# Auto-detect + fill every known agent surface in a project
+python3 scripts/register.py install claude-code --agent auto --project /path/to/repo
+
+# Preview / audit
+python3 scripts/register.py install claude-code --agent antigravity --project . --dry-run
+python3 scripts/register.py status claude-code --project /path/to/repo
 ```
 
 ---
