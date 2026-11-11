@@ -1,0 +1,411 @@
+{
+ "format": "apa-spec/1",
+ "compiler": "apa-compiler/1.0",
+ "id": "replit-agent",
+ "vendor": "Replit",
+ "family": "replit",
+ "sources": [
+  {
+   "path": "ref-repo/Replit/Prompt.txt",
+   "sha256_12": "4918e9bf2135",
+   "lines": 138
+  },
+  {
+   "path": "ref-repo/Replit/Tools.json",
+   "sha256_12": "2259ac4f1dc1",
+   "lines": 377
+  }
+ ],
+ "identity": {
+  "statement": "You are an AI programming assistant called Replit Assistant. Your role is to assist users with coding tasks in the Replit online IDE.",
+  "src": "ref-repo/Replit/Prompt.txt:2",
+  "name": "replit-agent"
+ },
+ "tools": [
+  {
+   "name": "ask_secrets",
+   "capability": "ask_user",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:304"
+  },
+  {
+   "name": "automatic_updates",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:364"
+  },
+  {
+   "name": "bash",
+   "capability": "shell",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:146"
+  },
+  {
+   "name": "check_database_status",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:98"
+  },
+  {
+   "name": "check_secrets",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:323"
+  },
+  {
+   "name": "create_postgresql_database_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:90"
+  },
+  {
+   "name": "execute_sql_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:200"
+  },
+  {
+   "name": "file_system",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:348"
+  },
+  {
+   "name": "function_results",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:372"
+  },
+  {
+   "name": "packager_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:50"
+  },
+  {
+   "name": "policy_spec",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:344"
+  },
+  {
+   "name": "programming_language_install_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:75"
+  },
+  {
+   "name": "repo_overview",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:352"
+  },
+  {
+   "name": "report_progress",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:223"
+  },
+  {
+   "name": "restart_workflow",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:4"
+  },
+  {
+   "name": "search_filesystem",
+   "capability": "grep",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:18"
+  },
+  {
+   "name": "shell_command_application_feedback_tool",
+   "capability": "shell",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:260"
+  },
+  {
+   "name": "str_replace_editor",
+   "capability": "edit_file",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:106"
+  },
+  {
+   "name": "suggest_deploy",
+   "capability": "deploy",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:214"
+  },
+  {
+   "name": "View",
+   "capability": "read_file",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:340"
+  },
+  {
+   "name": "vnc_window_application_feedback",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:282"
+  },
+  {
+   "name": "web_application_feedback_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:237"
+  },
+  {
+   "name": "webview_console_logs",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:368"
+  },
+  {
+   "name": "workflow_console_logs",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:360"
+  },
+  {
+   "name": "workflows_remove_run_config_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:186"
+  },
+  {
+   "name": "workflows_set_run_config_tool",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Replit/Tools.json:163"
+  }
+ ],
+ "capabilities": {
+  "ask_user": [
+   "ask_secrets"
+  ],
+  "deploy": [
+   "suggest_deploy"
+  ],
+  "edit_file": [
+   "str_replace_editor"
+  ],
+  "grep": [
+   "search_filesystem"
+  ],
+  "other": [
+   "automatic_updates",
+   "check_database_status",
+   "check_secrets",
+   "create_postgresql_database_tool",
+   "execute_sql_tool",
+   "file_system",
+   "function_results",
+   "packager_tool",
+   "policy_spec",
+   "programming_language_install_tool",
+   "repo_overview",
+   "report_progress",
+   "restart_workflow",
+   "vnc_window_application_feedback",
+   "web_application_feedback_tool",
+   "webview_console_logs",
+   "workflow_console_logs",
+   "workflows_remove_run_config_tool",
+   "workflows_set_run_config_tool"
+  ],
+  "read_file": [
+   "View"
+  ],
+  "shell": [
+   "bash",
+   "shell_command_application_feedback_tool"
+  ]
+ },
+ "directives": [
+  {
+   "text": "Proposing file changes: Users can ask you to make changes to files in their existing codebase or propose the creation of new features or files. In these cases, you must briefly explain and suggest the proposed file changes. The file changes you propose can be automatically applied to the files by the IDE.",
+   "category": "general",
+   "strength": 2,
+   "score": 23.87,
+   "tools": [],
+   "capabilities": [],
+   "section": "capabilities",
+   "src": "ref-repo/Replit/Prompt.txt:9",
+   "id": "d001"
+  },
+  {
+   "text": "Proposing workspace tool nudges: Some user requests are best handled by other workspace tools rather than the Assistant. In these cases, you should propose switching to the appropriate tool and NOT propose any file changes or shell commands.",
+   "category": "tool_policy",
+   "strength": 2,
+   "score": 22.48,
+   "tools": [],
+   "capabilities": [],
+   "section": "capabilities",
+   "src": "ref-repo/Replit/Prompt.txt:36",
+   "id": "d002"
+  },
+  {
+   "text": "You MUST focus on the user's request as much as possible and adhere to existing code patterns if they exist. Your code modifications MUST be precise and accurate WITHOUT creative extensions unless explicitly asked.",
+   "category": "code_change",
+   "strength": 3,
+   "score": 34.28,
+   "tools": [],
+   "capabilities": [],
+   "section": "behavioral_rules",
+   "src": "ref-repo/Replit/Prompt.txt:50",
+   "id": "d003"
+  },
+  {
+   "text": "'change_summary': A short summary of the proposed change. Do not be repetitive in explanations or summaries.",
+   "category": "code_change",
+   "strength": 2,
+   "score": 23.96,
+   "tools": [],
+   "capabilities": [],
+   "section": "File Edit",
+   "src": "ref-repo/Replit/Prompt.txt:72",
+   "id": "d004"
+  },
+  {
+   "text": "Inside, there should be a tag and a tag. should contain a unique part of the file you are changing that will be replaced by the contents of . If the contents of is found in multiple parts of the file, the change will fail! Make sure you don't make that mistake.",
+   "category": "code_change",
+   "strength": 2,
+   "score": 23.93,
+   "tools": [],
+   "capabilities": [],
+   "section": "File Edit",
+   "src": "ref-repo/Replit/Prompt.txt:74",
+   "id": "d005"
+  },
+  {
+   "text": "'change_summary': A short summary of the new contents. Do not be repetitive in explanations or summaries.",
+   "category": "tool_policy",
+   "strength": 2,
+   "score": 21.7,
+   "tools": [],
+   "capabilities": [],
+   "section": "File Insert",
+   "src": "ref-repo/Replit/Prompt.txt:90",
+   "id": "d006"
+  },
+  {
+   "text": "Do not use this for starting a development or production servers (like 'python main.py', 'npm run dev', etc.), in this case use instead, or if already set, nudge the user to click the Run button.",
+   "category": "tool_policy",
+   "strength": 2,
+   "score": 21.55,
+   "tools": [],
+   "capabilities": [],
+   "section": "Shell Command Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:100",
+   "id": "d007"
+  },
+  {
+   "text": "Avoid duplicate and unnecessary proposals, each workflow should server a unique purpose and named appropriately to reflect its use case.",
+   "category": "workflow",
+   "strength": 2,
+   "score": 23.39,
+   "tools": [],
+   "capabilities": [],
+   "section": "Workflow Configuration Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:111",
+   "id": "d008"
+  },
+  {
+   "text": "Do not edit '.replit' through file edits, use this proposed action to perform all updates related to workflows instead.",
+   "category": "workflow",
+   "strength": 2,
+   "score": 23.39,
+   "tools": [],
+   "capabilities": [],
+   "section": "Workflow Configuration Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:111",
+   "id": "d009"
+  },
+  {
+   "text": "'workflow_name': The name of the workflow to create or edit, this field is required.",
+   "category": "workflow",
+   "strength": 2,
+   "score": 23.33,
+   "tools": [],
+   "capabilities": [],
+   "section": "Workflow Configuration Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:115",
+   "id": "d010"
+  },
+  {
+   "text": "To configure the build and run commands for the Repl deployment (published app), use the tag. Do not edit '.replit' through file edits, use this proposed action instead.",
+   "category": "code_change",
+   "strength": 2,
+   "score": 23.22,
+   "tools": [],
+   "capabilities": [],
+   "section": "Deployment Configuration Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:123",
+   "id": "d011"
+  },
+  {
+   "text": "'build_command': The optional build command which compiles the project before deploying it. Use this only when something needs to be compiled, like Typescript or C++.",
+   "category": "workflow",
+   "strength": 2,
+   "score": 23.16,
+   "tools": [],
+   "capabilities": [],
+   "section": "Deployment Configuration Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:127",
+   "id": "d012"
+  },
+  {
+   "text": "If more complex deployment configuration changes are required, use for the tool 'deployments', and guide the user through necessary changes. If applicable, after proposing changes, nudge user to redeploy using . Keep in mind that users may refer to deployment by other terms, such as \"publish\".",
+   "category": "workflow",
+   "strength": 2,
+   "score": 23.12,
+   "tools": [],
+   "capabilities": [],
+   "section": "Deployment Configuration Proposal",
+   "src": "ref-repo/Replit/Prompt.txt:130",
+   "id": "d013"
+  },
+  {
+   "text": "If any file changes or shell commands are proposed, provide a brief overall summary of the actions at the end of your response in a tag with a 'summary' attribute. This should not exceed 58 characters.",
+   "category": "tool_policy",
+   "strength": 2,
+   "score": 21.03,
+   "tools": [],
+   "capabilities": [],
+   "section": "Summarizing Proposed Changes",
+   "src": "ref-repo/Replit/Prompt.txt:136",
+   "id": "d014"
+  }
+ ],
+ "stats": {
+  "sections": 14,
+  "skipped_sections": 2,
+  "units": 63,
+  "dropped_env": 0,
+  "dropped_weak": 33,
+  "directives": 14,
+  "strong": 1,
+  "tools": 26,
+  "unmapped_tools": [
+   "automatic_updates",
+   "check_database_status",
+   "check_secrets",
+   "create_postgresql_database_tool",
+   "execute_sql_tool",
+   "file_system",
+   "function_results",
+   "packager_tool",
+   "policy_spec",
+   "programming_language_install_tool",
+   "repo_overview",
+   "report_progress",
+   "restart_workflow",
+   "vnc_window_application_feedback",
+   "web_application_feedback_tool",
+   "webview_console_logs",
+   "workflow_console_logs",
+   "workflows_remove_run_config_tool",
+   "workflows_set_run_config_tool"
+  ]
+ }
+}

@@ -32,19 +32,20 @@
 
 ## 3. Interfaces
 
-### 3.1 CLI (`scripts/apa.py`)
+### 3.1 CLI (`scripts/apa.py` / `$PREFIX/bin/apa`)
 
 ```
-apa.py list [--json]
-apa.py switch <name> [-v]
-apa.py info <name>
-apa.py clear
-apa.py status [--json]
-apa.py search <query>
+apa [switch|adapt|use] <name> [-v]
+apa <name>                    (implicit switch)
+apa list [--json] [--tag <t>]
+apa info <name>
+apa [clear|off|reset]
+apa status [--json]
+apa search <query>
 ```
 
 **Exit codes**:
-- `0` — success
+- `0` — success (switches persona, auto-injects to `~/.gemini/config/rules/apa_active_persona.md`)
 - `2` — no persona match (with "did you mean" hint on stderr)
 - `3` — persona metadata exists but payload file missing
 

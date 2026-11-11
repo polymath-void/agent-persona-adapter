@@ -26,20 +26,23 @@ Host Agent: (restores native persona)
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        USER INPUT                           │
-│         "/APA <agent>"   or   "@APA <agent>"                │
+│   "/APA <agent>" | "@APA <agent>" | "adapt <agent>" | "apa <agent>"   │
 └───────────────────────────┬─────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│               TRIGGER RECOGNIZER (regex)                    │
-│         pattern: (?:^|\s)(?:/|@)APA\s+([A-Za-z0-9._-]+)     │
+│          ZERO-SEARCH DIRECT TRIGGER RECOGNIZER              │
+│   - Natural regex: (?:^|\s)(?:adapt|act as|switch to|apa)\s+  │
+│   - Slash / At: (?:^|\s)(?:/|@)APA\s+([A-Za-z0-9._-]+)     │
+│   - ZERO ARCHITECTURE SCANS: skips tree searches & file reads│
 └───────────┬─────────────────────────────────┬───────────────┘
             │ matched                         │ no match
             ▼                                 ▼
 ┌───────────────────────┐         ┌───────────────────────────┐
 │   APA RESOLVER (CLI)  │         │   Normal agent behavior   │
-│   apa.py switch <id>  │         │   (native persona)        │
-└───────────┬───────────┘         └───────────────────────────┘
+│   apa switch <id>     │         │   (native persona)        │
+│   (dynamic $PREFIX/bin)│        └───────────────────────────┘
+└───────────┬───────────┘
             │
             ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -319,11 +322,39 @@ All writes are idempotent (managed markers, no duplication, no clobber).
 
 ## 10. Success Criteria
 
-- ✅ `/APA claude` instantly activates claude-code persona
+- ✅ `/APA claude` / `adapt claude` instantly activates claude-code persona
+- ✅ Zero-search direct execution without reading architecture files
 - ✅ `@APA agy` activates antigravity persona via alias
 - ✅ `/APA cursr` fuzzy-matches cursor-agent (cutoff 0.72)
-- ✅ `/APA clear` restores host persona
+- ✅ `/APA clear` / `apa off` restores host persona
 - ✅ Native persona fully suppressed while APA persona active
 - ✅ ADAPTER FLOOR never overridden by persona
 - ✅ No fabrication; provenance tracked
 - ✅ Zero third-party dependencies
+
+---
+
+## 11. Live Telemetry & Transcript Verification Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 LIVE APA EXECUTION & TELEMETRY              │
+├─────────────────────────────────────────────────────────────┤
+│  CLI Command: apa adapt claude                              │
+│  State Sync: state/active.json ("active": "claude-code")    │
+│  Audit Trail: state/audit.log (ts, from, to, via)           │
+│  Dynamic Rule: ~/.gemini/config/rules/apa_active_persona.md │
+│                (14,532 bytes, auto-mounted to <user_rules>) │
+├─────────────────────────────────────────────────────────────┤
+│                 TRANSCRIPT TELEMETRY CAPTURE                │
+│                                                             │
+│  Step 176 (Execution): apa adapt claude                     │
+│  Step 181 (Baseline): input=2,524, cache=110,126 tokens     │
+│  Step 182 (User Directive): Analysis prompt received        │
+│  Step 183 (Re-Cache): input=114,243 tokens (cache refresh)  │
+│                                                             │
+│  Delta Proof: +1,593 tokens corresponding to the newly      │
+│  injected rule block (~14.5 KB payload), proving direct      │
+│  context ingestion into the LLM system prompt space.        │
+└─────────────────────────────────────────────────────────────┘
+```

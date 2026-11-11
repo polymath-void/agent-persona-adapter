@@ -1,0 +1,444 @@
+{
+ "format": "apa-spec/1",
+ "compiler": "apa-compiler/1.0",
+ "id": "manus",
+ "vendor": "Manus",
+ "family": "manus",
+ "sources": [
+  {
+   "path": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt",
+   "sha256_12": "c13fa64374c8",
+   "lines": 251
+  },
+  {
+   "path": "ref-repo/Manus Agent Tools & Prompt/tools.json",
+   "sha256_12": "87b9ead0071e",
+   "lines": 615
+  }
+ ],
+ "identity": {
+  "name": "manus"
+ },
+ "tools": [
+  {
+   "name": "browser_click",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:348"
+  },
+  {
+   "name": "browser_console_exec",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:496"
+  },
+  {
+   "name": "browser_console_view",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:513"
+  },
+  {
+   "name": "browser_input",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:372"
+  },
+  {
+   "name": "browser_move_mouse",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:405"
+  },
+  {
+   "name": "browser_navigate",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:314"
+  },
+  {
+   "name": "browser_press_key",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:426"
+  },
+  {
+   "name": "browser_restart",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:331"
+  },
+  {
+   "name": "browser_scroll_down",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:480"
+  },
+  {
+   "name": "browser_scroll_up",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:464"
+  },
+  {
+   "name": "browser_select_option",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:443"
+  },
+  {
+   "name": "browser_view",
+   "capability": "browser",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:304"
+  },
+  {
+   "name": "deploy_apply_deployment",
+   "capability": "deploy",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:568"
+  },
+  {
+   "name": "deploy_expose_port",
+   "capability": "deploy",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:551"
+  },
+  {
+   "name": "file_find_by_name",
+   "capability": "glob",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:178"
+  },
+  {
+   "name": "file_find_in_content",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:153"
+  },
+  {
+   "name": "file_read",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:58"
+  },
+  {
+   "name": "file_str_replace",
+   "capability": "edit_file",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:124"
+  },
+  {
+   "name": "file_write",
+   "capability": "write_file",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:87"
+  },
+  {
+   "name": "idle",
+   "capability": "reply",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:607"
+  },
+  {
+   "name": "info_search_web",
+   "capability": "web_search",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:529"
+  },
+  {
+   "name": "make_manus_page",
+   "capability": "other",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:590"
+  },
+  {
+   "name": "message_ask_user",
+   "capability": "ask_user",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:29"
+  },
+  {
+   "name": "message_notify_user",
+   "capability": "ask_user",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:5"
+  },
+  {
+   "name": "shell_exec",
+   "capability": "shell",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:199"
+  },
+  {
+   "name": "shell_kill_process",
+   "capability": "shell_output",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:287"
+  },
+  {
+   "name": "shell_view",
+   "capability": "shell_output",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:224"
+  },
+  {
+   "name": "shell_wait",
+   "capability": "shell_output",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:241"
+  },
+  {
+   "name": "shell_write_to_process",
+   "capability": "write_file",
+   "via": "json",
+   "src": "ref-repo/Manus Agent Tools & Prompt/tools.json:262"
+  }
+ ],
+ "capabilities": {
+  "ask_user": [
+   "message_ask_user",
+   "message_notify_user"
+  ],
+  "browser": [
+   "browser_click",
+   "browser_console_exec",
+   "browser_console_view",
+   "browser_input",
+   "browser_move_mouse",
+   "browser_navigate",
+   "browser_press_key",
+   "browser_restart",
+   "browser_scroll_down",
+   "browser_scroll_up",
+   "browser_select_option",
+   "browser_view"
+  ],
+  "deploy": [
+   "deploy_apply_deployment",
+   "deploy_expose_port"
+  ],
+  "edit_file": [
+   "file_str_replace"
+  ],
+  "glob": [
+   "file_find_by_name"
+  ],
+  "other": [
+   "file_find_in_content",
+   "file_read",
+   "make_manus_page"
+  ],
+  "reply": [
+   "idle"
+  ],
+  "shell": [
+   "shell_exec"
+  ],
+  "shell_output": [
+   "shell_kill_process",
+   "shell_view",
+   "shell_wait"
+  ],
+  "web_search": [
+   "info_search_web"
+  ],
+  "write_file": [
+   "file_write",
+   "shell_write_to_process"
+  ]
+ },
+ "directives": [
+  {
+   "text": "State your request explicitly",
+   "category": "general",
+   "strength": 1,
+   "score": 12.91,
+   "tools": [],
+   "capabilities": [],
+   "section": "Be Specific and Clear",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:137",
+   "id": "d001"
+  },
+  {
+   "text": "Include relevant context and background information",
+   "category": "workflow",
+   "strength": 1,
+   "score": 13.9,
+   "tools": [],
+   "capabilities": [],
+   "section": "Be Specific and Clear",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:138",
+   "id": "d002"
+  },
+  {
+   "text": "Mention any constraints or requirements",
+   "category": "general",
+   "strength": 1,
+   "score": 12.88,
+   "tools": [],
+   "capabilities": [],
+   "section": "Be Specific and Clear",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:140",
+   "id": "d003"
+  },
+  {
+   "text": "Explain why you need the information",
+   "category": "workflow",
+   "strength": 1,
+   "score": 13.86,
+   "tools": [],
+   "capabilities": [],
+   "section": "Provide Context",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:143",
+   "id": "d004"
+  },
+  {
+   "text": "Mention previous attempts if applicable",
+   "category": "workflow",
+   "strength": 1,
+   "score": 13.84,
+   "tools": [],
+   "capabilities": [],
+   "section": "Provide Context",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:145",
+   "id": "d005"
+  },
+  {
+   "text": "Break complex requests into smaller parts",
+   "category": "general",
+   "strength": 1,
+   "score": 12.81,
+   "tools": [],
+   "capabilities": [],
+   "section": "Structure Your Request",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:149",
+   "id": "d006"
+  },
+  {
+   "text": "Use numbered lists for multi-part questions",
+   "category": "general",
+   "strength": 1,
+   "score": 12.8,
+   "tools": [],
+   "capabilities": [],
+   "section": "Structure Your Request",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:150",
+   "id": "d007"
+  },
+  {
+   "text": "Prioritize information if asking for multiple things",
+   "category": "general",
+   "strength": 1,
+   "score": 12.8,
+   "tools": [],
+   "capabilities": [],
+   "section": "Structure Your Request",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:151",
+   "id": "d008"
+  },
+  {
+   "text": "Consider using headers or sections for organization",
+   "category": "general",
+   "strength": 1,
+   "score": 12.79,
+   "tools": [],
+   "capabilities": [],
+   "section": "Structure Your Request",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:152",
+   "id": "d009"
+  },
+  {
+   "text": "Mention if you need code examples, citations, or other special elements",
+   "category": "voice",
+   "strength": 1,
+   "score": 14.75,
+   "tools": [],
+   "capabilities": [],
+   "section": "Specify Output Format",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:157",
+   "id": "d010"
+  },
+  {
+   "text": "\"I need to create a simple contact form for a personal portfolio website. Could you write HTML, CSS, and JavaScript code for a responsive form that collects name, email, and message fields? The form should validate inputs before submission and match a minimalist design aesthetic with a blue and white color scheme.\"",
+   "category": "code_change",
+   "strength": 2,
+   "score": 23.63,
+   "tools": [],
+   "capabilities": [],
+   "section": "Improved Prompt",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:172",
+   "id": "d011"
+  },
+  {
+   "text": "Start with an initial prompt",
+   "category": "general",
+   "strength": 1,
+   "score": 12.58,
+   "tools": [],
+   "capabilities": [],
+   "section": "Iterative Prompting",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:178",
+   "id": "d012"
+  },
+  {
+   "text": "Effective prompting is a skill that develops with practice. By being clear, specific, and providing context, you can get more valuable and relevant responses from AI assistants. Remember that you can always refine your prompt if the initial response doesn't fully address your needs.",
+   "category": "workflow",
+   "strength": 2,
+   "score": 23.44,
+   "tools": [],
+   "capabilities": [],
+   "section": "Conclusion",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:196",
+   "id": "d013"
+  },
+  {
+   "text": "Break down complex problems into manageable steps",
+   "category": "workflow",
+   "strength": 1,
+   "score": 13.33,
+   "tools": [],
+   "capabilities": [],
+   "section": "How I Approach Tasks",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:209",
+   "id": "d014"
+  },
+  {
+   "text": "Use appropriate tools and methods to address each step",
+   "category": "workflow",
+   "strength": 1,
+   "score": 13.33,
+   "tools": [],
+   "capabilities": [],
+   "section": "How I Approach Tasks",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:210",
+   "id": "d015"
+  },
+  {
+   "text": "Provide clear communication throughout the process",
+   "category": "workflow",
+   "strength": 1,
+   "score": 13.32,
+   "tools": [],
+   "capabilities": [],
+   "section": "How I Approach Tasks",
+   "src": "ref-repo/Manus Agent Tools & Prompt/Prompt.txt:211",
+   "id": "d016"
+  }
+ ],
+ "stats": {
+  "sections": 47,
+  "skipped_sections": 2,
+  "units": 149,
+  "dropped_env": 4,
+  "dropped_weak": 117,
+  "directives": 16,
+  "strong": 0,
+  "tools": 29,
+  "unmapped_tools": [
+   "file_find_in_content",
+   "file_read",
+   "make_manus_page"
+  ]
+ }
+}

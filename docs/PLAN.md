@@ -153,9 +153,23 @@ scoring (offline, zero-dep, explainable); cross-device sync = `.apa` bundles
 
 ---
 
+## Phase 7 — Dynamic Context Auto-Injection & Live Transcript Telemetry Proof ✅ (v2.1.0, 2026-10-28)
+
+- [x] **Zero-Search Direct Execution**: natural language prompt triggers (`adapt <name>`, `act as <name>`, `apa <name>`, `switch to <name>`) immediately execute `apa switch <name>` without reading repo architecture docs or running tree scans.
+- [x] **Dynamic Path Resolution**: eliminate all hardcoded directories. Dynamic resolution via `PREFIX` (`$PREFIX/bin/apa`), `APA_ROOT`, and standard library path resolution.
+- [x] **Dynamic Rule Auto-Injection**: `scripts/apa.py` automatically injects `state/active_persona.md` and synchronizes `~/.gemini/config/rules/apa_active_persona.md` and workspace `.agents/rules/` on `switch`/`adapt`.
+- [x] **Zero-Leakage Cleanup**: `apa clear` / `apa off` atomically removes active rule files, guaranteeing 0 residual token overhead and restoring native host persona.
+- [x] **CLI Subcommand Aliases & Interception**: support `apa adapt`, `apa use`, `apa activate`, `apa off`, `apa reset`, and direct bare persona names (`apa claude`).
+- [x] **Live Session Telemetry Proof**: verified via live transcript (`transcript.jsonl`) — Step 176 execution, audit trail transition, and Step 181 ➔ 183 prompt re-cache delta (`2,524` ➔ `114,243` input tokens), proving authentic context injection into `<user_rules>`.
+
+**Exit criteria**: ✅ Zero-search triggers, dynamic rules auto-injection, live transcript telemetry validated.
+
+---
+
 ## Backlog (Unscheduled)
 
 - [x] Persona versioning — **done in Phase 6** (history/revert)
+- [x] Dynamic context injection & telemetry — **done in Phase 7**
 - [ ] `polymath-core` session tracker integration (`pm log` / `pmc events`)
 - [ ] Encrypted cross-device sync service (current: `.apa` bundles + serverless deploy)
 - [ ] Team sharing (multi-user registry with auth)
@@ -170,11 +184,12 @@ scoring (offline, zero-dep, explainable); cross-device sync = `.apa` bundles
 | Phase | Version | Status | Key Feature |
 |-------|---------|--------|-------------|
 | 1 | 1.0.0 | ✅ DONE | Core engine, 31 personas, CLI |
-| 2 | 1.1.0 | ⬜ TODO | Skill integration, auto-resume |
-| 3 | 1.2.0 | ⬜ TODO | Extended personas, custom |
-| 4 | 2.0.0 | ⬜ TODO | Web UI |
-| 5 | 2.1.0 | ⬜ TODO | Cross-session persistence |
-| 6 | 3.0.0 | ⬜ TODO | Advanced features |
+| 2 | 1.1.0 | ✅ DONE | Skill integration, universal registrar |
+| 3 | 1.2.0 | ✅ DONE | Extended personas (42), custom, bundles |
+| 4 | 2.0.0 | ✅ DONE | Dual-mode Web UI cockpit SPA |
+| 5 | 2.0.0 | ✅ DONE | Cross-session persistence & resume |
+| 6 | 2.0.0 | ✅ DONE | Advanced features (blend, AB, stats, history) |
+| 7 | 2.1.0 | ✅ DONE | Dynamic triggers, auto-injection, telemetry proof |
 
 ---
 

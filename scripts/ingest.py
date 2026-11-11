@@ -13,6 +13,8 @@ import sys
 import hashlib
 from pathlib import Path
 
+import apa_compiler
+
 ROOT = Path(__file__).resolve().parent.parent
 REF = ROOT / "ref-repo"
 OUT_PERSONAS = ROOT / "personas"
@@ -22,7 +24,7 @@ OUT_REGISTRY = ROOT / "registry" / "agents.json"
 SPEC: list[dict] = [
     {"id": "claude-code",   "vendor": "Anthropic", "family": "claude",
      "aliases": ["claude", "cc", "claudecode", "anthropic"],
-     "files": ["Anthropic/Claude Code/Prompt.txt", "Anthropic/Claude Code 2.0.txt"]},
+     "files": ["Anthropic/Claude Code/Prompt.txt", "Anthropic/Claude Code/Tools.json", "Anthropic/Claude Code 2.0.txt"]},
     {"id": "cursor-agent",  "vendor": "Cursor", "family": "cursor",
      "aliases": ["cursor", "cur"],
      "files": ["Cursor Prompts/Agent Prompt 2.0.txt", "Cursor Prompts/Agent Prompt v1.2.txt"]},
@@ -57,13 +59,13 @@ SPEC: list[dict] = [
      "files": ["VSCode Agent/Prompt.txt", "VSCode Agent/claude-sonnet-4.txt"]},
     {"id": "amp",           "vendor": "Sourcegraph", "family": "amp",
      "aliases": ["amper", "sg"],
-     "files": ["Amp/README.md"]},
+     "files": ["Amp/claude-4-sonnet.yaml", "Amp/README.md"]},
     {"id": "warp-agent",    "vendor": "Warp", "family": "warp",
      "aliases": ["warp", "wp"],
      "files": ["Warp.dev/Prompt.txt"]},
     {"id": "trae",          "vendor": "ByteDance", "family": "trae",
      "aliases": ["bytedance", "tr"],
-     "files": ["Trae/Builder Prompt.txt"]},
+     "files": ["Trae/Builder Prompt.txt", "Trae/Builder Tools.json"]},
     {"id": "kiro",          "vendor": "AWS", "family": "kiro",
      "aliases": ["aws-kiro", "kr"],
      "files": ["Kiro/Spec_Prompt.txt"]},
@@ -75,37 +77,37 @@ SPEC: list[dict] = [
      "files": ["Devin AI/Prompt.txt"]},
     {"id": "replit-agent",  "vendor": "Replit", "family": "replit",
      "aliases": ["replit", "rp"],
-     "files": ["Replit/Prompt.txt"]},
+     "files": ["Replit/Prompt.txt", "Replit/Tools.json"]},
     {"id": "lovable",       "vendor": "Lovable", "family": "lovable",
      "aliases": ["lov", "lv"],
-     "files": ["Lovable/Agent Prompt.txt"]},
+     "files": ["Lovable/Agent Prompt.txt", "Lovable/Agent Tools.json"]},
     {"id": "bolt-new",      "vendor": "StackBlitz", "family": "bolt",
      "aliases": ["bolt", "stackblitz"],
      "files": ["Open Source prompts/Bolt/Prompt.txt"]},
     {"id": "augment",       "vendor": "Augment", "family": "augment",
      "aliases": ["aug", "augment-code"],
-     "files": ["Augment Code/claude-4-sonnet-agent-prompts.txt"]},
+     "files": ["Augment Code/claude-4-sonnet-agent-prompts.txt", "Augment Code/claude-4-sonnet-tools.json"]},
     {"id": "kilo-code",     "vendor": "Kilo", "family": "kilo",
      "aliases": ["kilo", "kl"],
      "files": ["Open Source prompts/Kilo Code/Agent Prompt (kilo.auto-free) 2026-09-11.txt"]},
     {"id": "manus",         "vendor": "Manus", "family": "manus",
      "aliases": ["mn", "manus-agent"],
-     "files": ["Manus Agent Tools & Prompt/Prompt.txt"]},
+     "files": ["Manus Agent Tools & Prompt/Prompt.txt", "Manus Agent Tools & Prompt/tools.json"]},
     {"id": "qoder",         "vendor": "Qoder", "family": "qoder",
      "aliases": ["qd", "quest"],
      "files": ["Qoder/prompt.txt"]},
     {"id": "traycer",       "vendor": "Traycer", "family": "traycer",
      "aliases": ["tc", "traycer-ai"],
-     "files": ["Traycer AI/phase_mode_prompts.txt"]},
+     "files": ["Traycer AI/phase_mode_prompts.txt", "Traycer AI/phase_mode_tools.json"]},
     {"id": "notion-ai",     "vendor": "Notion", "family": "notion",
      "aliases": ["notion", "nt"],
-     "files": ["NotionAi/Prompt.txt"]},
+     "files": ["NotionAi/Prompt.txt", "NotionAi/tools.json"]},
     {"id": "perplexity",    "vendor": "Perplexity", "family": "pplx",
      "aliases": ["pplx", "pxy"],
      "files": ["Perplexity/Prompt.txt"]},
     {"id": "comet",         "vendor": "Perplexity", "family": "comet",
      "aliases": ["perplexity-browser", "comet-assistant"],
-     "files": ["Comet Assistant/System Prompt.txt"]},
+     "files": ["Comet Assistant/System Prompt.txt", "Comet Assistant/tools.json"]},
     {"id": "hermes",        "vendor": "Nous", "family": "hermes",
      "aliases": ["nous", "her"],
      "files": ["Open Source prompts/Hermes/Agent Prompt (nemotron.3.5.lightning-free) 2026-09-11.txt"]},
@@ -124,10 +126,10 @@ SPEC: list[dict] = [
      "files": ["CodeBuddy Prompts/Craft Prompt.txt", "CodeBuddy Prompts/Chat Prompt.txt"]},
     {"id": "emergent",      "vendor": "Emergent", "family": "emergent",
      "aliases": ["emg", "emergent-sh"],
-     "files": ["Emergent/Prompt.txt"]},
+     "files": ["Emergent/Prompt.txt", "Emergent/Tools.json"]},
     {"id": "leap-new",      "vendor": "Leap.new", "family": "leap",
      "aliases": ["leap", "lp"],
-     "files": ["Leap.new/Prompts.txt"]},
+     "files": ["Leap.new/Prompts.txt", "Leap.new/tools.json"]},
     {"id": "orchids",       "vendor": "Orchids", "family": "orchids",
      "aliases": ["orch", "orchids-app"],
      "files": ["Orchids.app/System Prompt.txt", "Orchids.app/Decision-making prompt.txt"]},
@@ -136,10 +138,10 @@ SPEC: list[dict] = [
      "files": ["Poke/Poke agent.txt"]},
     {"id": "same-dev",      "vendor": "Same.dev", "family": "same",
      "aliases": ["same", "samedev"],
-     "files": ["Same.dev/Prompt.txt"]},
+     "files": ["Same.dev/Prompt.txt", "Same.dev/Tools.json"]},
     {"id": "v0",            "vendor": "Vercel", "family": "v0",
      "aliases": ["vercel", "v0dev"],
-     "files": ["v0 Prompts and Tools/Prompt.txt"]},
+     "files": ["v0 Prompts and Tools/Prompt.txt", "v0 Prompts and Tools/Tools.json"]},
     {"id": "xcode",         "vendor": "Apple", "family": "xcode",
      "aliases": ["apple", "xc", "swift-ide"],
      "files": ["Xcode/ExplainAction.txt", "Xcode/DocumentAction.txt"]},
@@ -231,6 +233,10 @@ def normalize(text: str, max_bytes: int = 24000) -> str:
 def first_existing(files: list[str]) -> tuple[Path | None, str | None]:
     for rel in files:
         p = REF / rel
+        if p.exists() and p.suffix.lower() in (".txt", ".md", ".yaml", ".yml"):
+            return p, rel
+    for rel in files:
+        p = REF / rel
         if p.exists():
             return p, rel
     # fallback: scan vendor top-level dir for any .txt/.md
@@ -243,9 +249,24 @@ def first_existing(files: list[str]) -> tuple[Path | None, str | None]:
     return None, None
 
 
+def all_existing(files: list[str]) -> list[str]:
+    found = []
+    for rel in files:
+        p = REF / rel
+        if p.exists():
+            found.append(f"ref-repo/{rel}")
+    if not found and files:
+        top = (REF / files[0]).parent
+        if top.exists():
+            for cand in sorted(top.rglob("*")):
+                if cand.suffix.lower() in (".txt", ".md", ".yaml", ".yml", ".json"):
+                    found.append(f"ref-repo/{cand.relative_to(REF)}")
+    return found
+
+
 def build() -> int:
     registry: dict = {"agents": {}}
-    built = skipped = 0
+    built = skipped = compiled_cnt = 0
 
     for spec in SPEC:
         pid = spec["id"]
@@ -298,7 +319,8 @@ def build() -> int:
             encoding="utf-8",
         )
 
-        registry["agents"][pid] = {
+        existing_sources = all_existing(spec["files"])
+        entry = {
             "vendor": spec["vendor"],
             "family": spec["family"],
             "aliases": spec["aliases"],
@@ -308,14 +330,25 @@ def build() -> int:
             "sha256_12": digest,
             "tags": TAGS.get(pid, []),
             "origin": "ref-repo",
+            "sources": existing_sources,
         }
+        registry["agents"][pid] = entry
         built += 1
+
+        # Compile canonical Persona Spec IR (spec.json)
+        try:
+            compiled = apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+            stats = compiled.get("stats", {})
+            compiled_cnt += 1
+            print(f"  [compiled] {pid:<16} directives={stats.get('directives', 0):<3} tools={stats.get('tools', 0)}")
+        except Exception as e:
+            print(f"  [compile-err] {pid:<16} {e}", file=sys.stderr)
 
     OUT_REGISTRY.parent.mkdir(parents=True, exist_ok=True)
     OUT_REGISTRY.write_text(
         json.dumps(registry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    print(f"apa-ingest: built={built} skipped={skipped} registry={OUT_REGISTRY}")
+    print(f"apa-ingest: built={built} compiled={compiled_cnt} skipped={skipped} registry={OUT_REGISTRY}")
     return 0
 
 

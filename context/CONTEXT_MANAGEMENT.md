@@ -226,9 +226,25 @@ Total APA overhead: **< 50 MB** (Python interpreter + data)
 
 ---
 
-## 9. Related Documents
+## 9. Dynamic Context Synchronization & Live Telemetry Verification
+
+### 9.1 Multi-Layer Context Delivery
+APA injects context at two concurrent layers:
+1. **Interactive stdout stream**: Immediately returned into the conversational trajectory on `apa switch <name>`.
+2. **System Rule Layer (`apa_active_persona.md`)**: Atomically written to `~/.gemini/config/rules/` and `.agents/rules/`. On subsequent user turns, the runtime automatically mounts the rule block into the root system prompt (`<user_rules>`), eliminating identity confusion.
+
+### 9.2 Empirical Telemetry Proof (`transcript.jsonl`)
+In live testing with `claude-code` (14,532 byte payload):
+- **Pre-injection baseline (Step 181)**: `input_tokens: 2,524`, `cache_read_tokens: 110,126`
+- **Post-injection re-cache (Step 183)**: `input_tokens: 114,243`
+- **Verification**: The cache re-evaluation accurately incorporates the 14.5 KB (~3,600 token) rule payload into the system prompt space, validating that the persona was ingested cleanly without cross-persona residue.
+
+---
+
+## 10. Related Documents
 
 - `docs/TRD.md` § 4.2 — persona size cap constraint
 - `docs/TRD.md` § 5 — NFR latency/memory targets
 - `skills/APA/SKILL.md` § 4 — session lifecycle
+- `rules/apa_dynamic_persona.md` — dynamic trigger and context synchronization rule
 - `context/CONTEXT_MANAGEMENT.md` — this file

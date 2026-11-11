@@ -19,17 +19,72 @@ import shlex
 import subprocess
 import sys
 import tarfile
+import threading
 import time
 import difflib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import apa_compiler
+import apa_render
+
+HOME = Path.home()
+ROOT = Path(os.environ.get("APA_ROOT") or Path(__file__).resolve().parent.parent)
+PREFIX = Path(os.environ.get("PREFIX") or ("/data/data/com.termux/files/usr" if Path("/data/data/com.termux/files/usr").exists() else sys.prefix))
 REGISTRY = ROOT / "registry" / "agents.json"
 CUSTOM_REGISTRY = ROOT / "registry" / "custom.json"
 PERSONAS = ROOT / "personas"
 STATE_DIR = ROOT / "state"
 SESSION_STATE = STATE_DIR / "active.json"
 AUDIT = STATE_DIR / "audit.log"
+
+def _safe_replace(target: Path, write_fn) -> None:
+    """Rootless symlink safety: never write THROUGH an existing symlink."""
+    if os.path.lexists(target):
+        if target.is_dir() and not target.is_symlink():
+            return
+        os.remove(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_fn()
+
+
+def _inject_active_persona(pid: str, entry: dict, persona_content: str) -> None:
+    """Auto-inject active persona to session rules to eliminate identity conflict."""
+    rule_body = (
+        f"<!-- APA:ACTIVE_PERSONA_START -->\n"
+        f"<!-- APA:HOST_PERSONA_SUPPRESSED=true -->\n"
+        f"# ACTIVE PERSONA: {pid} ({entry.get('vendor', '?')} / {entry.get('family', '?')})\n"
+        f"> The host persona is SUPPRESSED for this session. The instructions below govern all behavior.\n\n"
+        f"{persona_content}\n"
+        f"<!-- APA:ACTIVE_PERSONA_END -->\n"
+    )
+    st_file = STATE_DIR / "active_persona.md"
+    _safe_replace(st_file, lambda: st_file.write_text(rule_body, encoding="utf-8"))
+
+    gemini_rules = HOME / ".gemini" / "config" / "rules"
+    if gemini_rules.is_dir():
+        target = gemini_rules / "apa_active_persona.md"
+        _safe_replace(target, lambda: target.write_text(rule_body, encoding="utf-8"))
+
+    ws_rules = ROOT.parent / ".agents" / "rules"
+    if ws_rules.is_dir():
+        target = ws_rules / "apa_active_persona.md"
+        _safe_replace(target, lambda: target.write_text(rule_body, encoding="utf-8"))
+
+
+def _remove_active_persona_injection() -> None:
+    """Remove injected active persona files on clear/reset."""
+    targets = [
+        STATE_DIR / "active_persona.md",
+        HOME / ".gemini" / "config" / "rules" / "apa_active_persona.md",
+        ROOT.parent / ".agents" / "rules" / "apa_active_persona.md",
+    ]
+    for target in targets:
+        if os.path.lexists(target):
+            try:
+                os.remove(target)
+            except OSError:
+                pass
 
 # --- host suppression markers -------------------------------------------
 SUPPRESS_ON = "<!-- APA:HOST_PERSONA_SUPPRESSED=true -->"
@@ -59,8 +114,15 @@ def _read_json(p: Path, default: dict) -> dict:
 
 
 def _write_json(p: Path, data: dict) -> None:
+    """Atomic write: temp file in the SAME dir + os.replace().
+
+    A crash mid-write can never truncate the target (os.replace is atomic on
+    POSIX/Bionic). Callers holding _STATE_LOCK get read-modify-write safety.
+    """
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    os.replace(tmp, p)  # atomic; removes any stale .tmp on success
 
 
 def _load_registry() -> dict:
@@ -85,9 +147,13 @@ def _registry_source(pid: str) -> Path:
 SESSIONS_DIR = STATE_DIR / "sessions"
 CURRENT_SESSION = STATE_DIR / "current-session"
 
+# Serializes read-modify-write on session state (serve.py is multi-threaded).
+_STATE_LOCK = threading.RLock()
+
 
 def _current_session_name() -> str:
-    return _read_json(CURRENT_SESSION, {"session": "default"}).get("session", "default")
+    with _STATE_LOCK:
+        return _read_json(CURRENT_SESSION, {"session": "default"}).get("session", "default")
 
 
 def _state_file() -> Path:
@@ -97,6 +163,35 @@ def _state_file() -> Path:
 
 def _write_state(st: dict) -> None:
     _write_json(_state_file(), st)
+
+
+def _mutate_state(fn) -> dict:
+    """Atomic read-modify-write of session state under the lock.
+
+    `fn(st)` mutates the state dict in place (and may return a value);
+    the write is atomic (os.replace) and serialized against concurrent
+    switch/clear/resume/patch. Returns fn's return value.
+    """
+    with _STATE_LOCK:
+        st = _read_state()
+        out = fn(st)
+        _write_state(st)
+        return out
+
+
+def _switch_state(st: dict, pid: str, ts: str, extra: dict | None = None) -> str:
+    """Set active=pid, record prev + history. Returns the previous active id."""
+    prev = st.get("active")
+    st["prev"] = prev
+    st["active"] = pid
+    st["activated_at"] = ts
+    if extra:
+        st.update(extra)
+    rec = {"from": prev, "to": pid, "ts": ts}
+    if extra:
+        rec.update(extra)
+    st["history"].append(rec)
+    return prev
 
 
 def _read_state() -> dict:
@@ -129,22 +224,39 @@ def _split_persona(text: str) -> tuple[dict, str]:
 
 
 # --- resolution ---------------------------------------------------------
-def resolve(name: str, reg: dict | None = None) -> tuple[str | None, dict]:
+def resolve(name: str | list[str], reg: dict | None = None) -> tuple[str | None, dict]:
     """Match an agent name/alias to a persona id. Returns (id, entry)."""
     reg = reg or _load_registry()
     agents = reg["agents"]
-    low = name.strip().lower()
+    
+    if isinstance(name, list):
+        raw = " ".join(name).strip()
+    else:
+        raw = str(name).strip()
+    
+    low = raw.lower()
+    for pfx in ("adapt to ", "adapt ", "act as ", "switch to ", "be ", "impersonate ", "roleplay as ", "the "):
+        if low.startswith(pfx):
+            low = low[len(pfx):].strip()
 
-    if low in agents:
-        return low, agents[low]
-    for aid, entry in agents.items():
-        for alias in entry.get("aliases", []):
-            if alias.lower() == low:
-                return aid, entry
+    candidates = [low]
+    if " " in low:
+        candidates.append(low.replace(" ", "-"))
+
+    for cand in candidates:
+        if cand in agents:
+            return cand, agents[cand]
+        for aid, entry in agents.items():
+            for alias in entry.get("aliases", []):
+                if alias.lower() == cand:
+                    return aid, entry
+
     pool = list(agents.keys())
     for aid, entry in agents.items():
         pool.extend(a.lower() for a in entry.get("aliases", []))
-    close = difflib.get_close_matches(low, pool, n=1, cutoff=0.72)
+    close = difflib.get_close_matches(candidates[0], pool, n=1, cutoff=0.72)
+    if not close and len(candidates) > 1:
+        close = difflib.get_close_matches(candidates[1], pool, n=1, cutoff=0.72)
     if close:
         hit = close[0]
         if hit in agents:
@@ -181,68 +293,134 @@ def cmd_list(args) -> int:
 
 def cmd_info(args) -> int:
     reg = _load_registry()
+    name_str = " ".join(args.name) if isinstance(args.name, list) else str(args.name)
     pid, entry = resolve(args.name, reg)
     if not pid:
-        print(f"apa: no persona matches '{args.name}'", file=sys.stderr)
+        print(f"apa: no persona matches '{name_str}'", file=sys.stderr)
         return 2
     out = dict(entry)
     out["id"] = pid
     out["custom"] = pid in reg["_custom_ids"]
     pfile = persona_path(pid)
     out["bytes"] = pfile.stat().st_size if pfile.exists() else 0
+    spfile = PERSONAS / pid / "spec.json"
+    if spfile.exists():
+        try:
+            sp = json.loads(spfile.read_text(encoding="utf-8"))
+            out["spec"] = {
+                "compiler": sp.get("compiler"),
+                "identity": sp.get("identity"),
+                "tools_count": len(sp.get("tools", [])),
+                "capabilities": list(sp.get("capabilities", {}).keys()),
+                "stats": sp.get("stats", {}),
+            }
+        except Exception:
+            out["spec"] = "corrupted"
     print(json.dumps(out, indent=2))
     return 0
 
 
 def cmd_switch(args) -> int:
     reg = _load_registry()
+    name_str = " ".join(args.name) if isinstance(args.name, list) else str(args.name)
     pid, entry = resolve(args.name, reg)
     if not pid:
-        print(f"apa: no persona matches '{args.name}'", file=sys.stderr)
+        print(f"apa: no persona matches '{name_str}'", file=sys.stderr)
         pool = sorted(reg["agents"].keys())
-        hint = difflib.get_close_matches(args.name.lower(), pool, n=3, cutoff=0.5)
+        hint = difflib.get_close_matches(name_str.lower(), pool, n=3, cutoff=0.5)
         if hint:
             print(f"apa: did you mean: {', '.join(hint)}", file=sys.stderr)
         return 2
+
     pfile = persona_path(pid)
-    if not pfile.exists():
-        print(f"apa: persona payload missing at {pfile}", file=sys.stderr)
-        return 3
+    spfile = PERSONAS / pid / "spec.json"
 
-    st = _read_state()
-    prev = st.get("active")
-    st["prev"] = prev
-    st["active"] = pid
-    st["activated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
-    st["history"].append({"from": prev, "to": pid, "ts": st["activated_at"]})
-    _write_state(st)
+    raw_mode = getattr(args, "raw", False)
+    hosts = apa_render.load_hosts(ROOT)
+    det_host, det_reason = apa_render.detect_host(hosts)
+    target_host_id = getattr(args, "host", None) or det_host
+    host_profile = hosts.get(target_host_id, hosts.get(det_host, hosts["generic"]))
 
-    persona = pfile.read_text(encoding="utf-8")
+    target_model_name = getattr(args, "model", None) or os.environ.get("APA_MODEL") or "generic"
+    model_fam = apa_render.resolve_model(target_model_name)
+    budget = getattr(args, "budget", None)
+
+    if raw_mode:
+        if not pfile.exists():
+            print(f"apa: persona payload missing at {pfile}", file=sys.stderr)
+            return 3
+        persona = pfile.read_text(encoding="utf-8")
+        extra_state = {"mode": "raw", "host": host_profile.get("id"), "model": model_fam}
+    else:
+        # Canonical IR mode with live tool binding & model adaptation
+        try:
+            if not spfile.exists() or apa_compiler.spec_is_stale(ROOT, pid, entry):
+                spec = apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+            else:
+                spec = json.loads(spfile.read_text(encoding="utf-8"))
+            persona, rep = apa_render.render(spec, host_profile, model=target_model_name, budget=budget)
+            extra_state = {
+                "mode": "adapted",
+                "host": host_profile.get("id"),
+                "model": model_fam,
+                "est_tokens": rep.get("est_tokens"),
+                "directives_selected": rep.get("directives_selected"),
+                "directives_total": rep.get("directives_total"),
+            }
+        except Exception as e:
+            if pfile.exists():
+                print(f"apa: [warn] compilation/rendering fallback ({e}); using raw payload", file=sys.stderr)
+                persona = pfile.read_text(encoding="utf-8")
+                extra_state = {"mode": "raw_fallback", "host": host_profile.get("id"), "model": model_fam, "error": str(e)}
+            else:
+                print(f"apa: failed to compile persona '{pid}': {e}", file=sys.stderr)
+                return 3
+
+    ts = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    prev = _mutate_state(lambda st: _switch_state(st, pid, ts, extra=extra_state))
+
+    _inject_active_persona(pid, entry, persona)
+
     print(SUPPRESS_ON)
-    print(f"# ACTIVE PERSONA: {pid} ({entry.get('vendor','?')})")
+    print(f"# ACTIVE PERSONA: {pid} ({entry.get('vendor','?')}) [host: {host_profile.get('id')}, model: {model_fam}]")
     print(f"# invoke: {entry.get('invocations', ['/APA ' + pid])}")
     print()
     print(persona)
 
-    _audit("switch", {"from": prev, "to": pid})
-    if args.verbose:
-        print(f"\n[apa] pushed {pid} ({len(persona)} bytes); host persona suppressed",
+    _audit("switch", {"from": prev, "to": pid, "host": host_profile.get("id"), "model": model_fam, "mode": extra_state.get("mode")})
+    if getattr(args, "verbose", False):
+        print(f"\n[apa] pushed {pid} ({len(persona)} bytes); host persona suppressed; target: {host_profile.get('id')}/{model_fam}",
               file=sys.stderr)
     return 0
 
 
 def cmd_clear(args) -> int:
-    st = _read_state()
-    prev = st.get("active")
+    prev = _mutate_state(lambda st: _clear_state(st))
+    _remove_active_persona_injection()
     if not prev:
         print("apa: no active persona")
         return 0
-    st["active"] = None
-    _write_state(st)
     print(RESTORE_ON)
     print(f"# APA persona cleared (was: {prev}); host persona restored for this session")
     _audit("clear", {"from": prev})
     return 0
+
+
+def _clear_state(st: dict) -> str:
+    """Set active=None. Returns the previous active id (or None)."""
+    prev = st.get("active")
+    st["active"] = None
+    return prev
+
+
+def _patch_state(st: dict, target: str | None, ts: str) -> str:
+    """Set active=target (None clears) with via='patch' history. Returns prev."""
+    prev = st.get("active")
+    st["prev"] = prev
+    st["active"] = target
+    st["activated_at"] = ts
+    st["history"].append({"from": prev, "to": target, "ts": ts, "via": "patch"})
+    return prev
 
 
 def cmd_status(args) -> int:
@@ -260,6 +438,10 @@ def cmd_status(args) -> int:
     e = reg["agents"].get(active, {})
     print(f"APA status: ACTIVE persona = {active} ({e.get('vendor','?')} / {e.get('family','?')})")
     print(f"  activated: {st.get('activated_at','?')}")
+    print(f"  host runtime: {st.get('host', 'antigravity')}")
+    print(f"  model profile: {st.get('model', 'generic')}")
+    if st.get('directives_selected'):
+        print(f"  directives: {st.get('directives_selected')}/{st.get('directives_total')} selected (est. tokens: {st.get('est_tokens', '?')})")
     print(f"  tags: {', '.join(e.get('tags', [])) or '-'}")
     print(f"  host persona: SUPPRESSED for this session")
     return 0
@@ -277,6 +459,118 @@ def cmd_search(args) -> int:
             hits.append(pid)
     print("\n".join(sorted(hits)) if hits else "apa: no matches")
     return 0 if hits else 1
+
+
+# --- Compiler, Verifier & Profiles ---------------------------------------
+def cmd_compile(args) -> int:
+    reg = _load_registry()
+    if getattr(args, "all", False) or getattr(args, "name", None) in (None, "all"):
+        cnt = 0
+        for pid, entry in sorted(reg["agents"].items()):
+            try:
+                spec = apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+                cnt += 1
+                stats = spec.get("stats", {})
+                print(f"compiled {pid:<16} directives={stats.get('directives',0):<3} tools={stats.get('tools',0)}")
+            except Exception as e:
+                print(f"error compiling {pid}: {e}", file=sys.stderr)
+        print(f"apa: compiled {cnt} personas into Persona Spec IR (spec.json)")
+        return 0
+
+    name_str = " ".join(args.name) if isinstance(args.name, list) else str(args.name)
+    pid, entry = resolve(name_str, reg)
+    if not pid:
+        print(f"apa: no persona matches '{name_str}'", file=sys.stderr)
+        return 2
+    spec = apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+    stats = spec.get("stats", {})
+    print(f"apa: compiled '{pid}' -> personas/{pid}/spec.json ({stats.get('directives',0)} directives, {stats.get('tools',0)} tools)")
+    return 0
+
+
+def cmd_verify(args) -> int:
+    reg = _load_registry()
+    hosts = apa_render.load_hosts(ROOT)
+    det_host, _ = apa_render.detect_host(hosts)
+    target_host = hosts.get(args.host, hosts.get(det_host, hosts["generic"])) if getattr(args, "host", None) else hosts.get(det_host, hosts["generic"])
+    model = getattr(args, "model", None) or os.environ.get("APA_MODEL") or "generic"
+
+    if getattr(args, "all", False) or getattr(args, "name", None) in (None, "all"):
+        results = []
+        for pid, entry in sorted(reg["agents"].items()):
+            try:
+                sp = PERSONAS / pid / "spec.json"
+                spec = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+                v = apa_render.verify(spec, target_host, model=model)
+                results.append(v)
+            except Exception as e:
+                results.append({"persona": pid, "error": str(e), "fidelity": 0.0, "grade": "F", "ok": False})
+        if getattr(args, "json", False):
+            print(json.dumps(results, indent=2))
+            return 0
+        print(f"APA verification — {len(results)} personas [host: {target_host['id']}, model: {apa_render.resolve_model(model)}]\n")
+        print(f" {'ID':<16} {'GRADE':<6} {'FIDELITY':<9} {'DIRECTIVES':<12} {'LEAKS':<6} {'STATUS'}")
+        print("-" * 65)
+        for r in results:
+            if "error" in r:
+                print(f" {r['persona']:<16} {'ERR':<6} {'0.000':<9} {'-':<12} {'-':<6} {r['error']}")
+            else:
+                ok_str = "OK" if r["ok"] else "FAIL"
+                leak_str = str(len(r["leaks"]))
+                print(f" {r['persona']:<16} {r['grade']:<6} {r['fidelity']:<9.3f} {r['directives']:<12} {leak_str:<6} {ok_str}")
+        return 0
+
+    name_str = " ".join(args.name) if isinstance(args.name, list) else str(args.name)
+    pid, entry = resolve(name_str, reg)
+    if not pid:
+        print(f"apa: no persona matches '{name_str}'", file=sys.stderr)
+        return 2
+    sp = PERSONAS / pid / "spec.json"
+    spec = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+    v = apa_render.verify(spec, target_host, model=model)
+    if getattr(args, "json", False):
+        print(json.dumps(v, indent=2))
+        return 0
+    print(f"APA verification report — '{pid}' on host '{target_host['id']}' (model: {apa_render.resolve_model(model)})\n")
+    print(f"  Fidelity Grade    : {v['grade']} ({v['fidelity']:.1%})")
+    print(f"  Directives        : {v['directives']} selected ({v['dropped_unavailable']} dropped due to unavailable tools)")
+    print(f"  Strong Coverage   : {v['coverage_strong']:.1%}")
+    print(f"  Category Breadth  : {v['category_breadth']:.1%}")
+    print(f"  Tool Binding Rate : {v['binding_rate']:.1%}")
+    print(f"  Est. Tokens       : {v['est_tokens']} / {v['budget']} budget")
+    print(f"  Foreign Tool Leaks: {len(v['leaks'])} {v['leaks'] if v['leaks'] else '(None - zero simulation leak)'}")
+    print(f"  Bindings breakdown: {v['bindings']}")
+    if v['issues']:
+        print("\n  Issues / Warnings:")
+        for iss in v['issues']:
+            print(f"   - {iss}")
+    return 0 if v["ok"] else 1
+
+
+def cmd_hosts(args) -> int:
+    hosts = apa_render.load_hosts(ROOT)
+    det, reason = apa_render.detect_host(hosts)
+    if getattr(args, "json", False):
+        print(json.dumps({"detected": det, "reason": reason, "hosts": hosts}, indent=2))
+        return 0
+    print(f"APA host profiles (detected: *{det}* via {reason})\n")
+    for hid, h in sorted(hosts.items()):
+        mark = "*" if hid == det else " "
+        bindings_cnt = len(h.get("bindings", {}))
+        print(f" {mark} {hid:<14} {h.get('label', hid):<35} ({bindings_cnt} capability bindings)")
+    return 0
+
+
+def cmd_models(args) -> int:
+    if getattr(args, "json", False):
+        print(json.dumps(apa_render.MODELS, indent=2))
+        return 0
+    print("APA supported model targets & profiles\n")
+    print(f" {'FAMILY':<10} {'STYLE':<10} {'BUDGET':<8} {'MIN_STRENGTH':<14} {'NOTE'}")
+    print("-" * 75)
+    for mid, m in apa_render.MODELS.items():
+        print(f" {mid:<10} {m['style']:<10} {m['budget']:<8} {m['min_strength']:<14} {m['note']}")
+    return 0
 
 
 # --- custom personas ----------------------------------------------------
@@ -323,14 +617,18 @@ def cmd_new(args) -> int:
         "bytes": len(body.encode()), "note": "hand-authored custom persona",
     }, indent=2) + "\n", encoding="utf-8")
 
-    custom = _read_json(CUSTOM_REGISTRY, {"agents": {}})
-    custom.setdefault("agents", {})[pid] = {
+    entry = {
         "vendor": vendor, "family": family, "aliases": aliases,
         "invocations": [f"/APA {pid}"] + [f"@APA {a}" for a in aliases[:3]],
         "payload": f"personas/{pid}/PERSONA.md",
         "sha256_12": _sha(body), "tags": tags, "origin": "custom",
     }
+    custom.setdefault("agents", {})[pid] = entry
     _write_json(CUSTOM_REGISTRY, custom)
+    try:
+        apa_compiler.compile_persona(ROOT, pid, entry, write=True)
+    except Exception:
+        pass
     _audit("new", {"id": pid})
     print(f"apa: created custom persona '{pid}'")
     print(f"  edit it:   apa.py edit {pid}")
@@ -379,10 +677,15 @@ def cmd_edit(args) -> int:
 
     # shadow registry entry so edits survive ingest regeneration
     custom = _read_json(CUSTOM_REGISTRY, {"agents": {}})
-    custom.setdefault("agents", {})[pid] = {
+    updated_entry = {
         **entry, "sha256_12": digest, "origin": "custom",
     }
+    custom.setdefault("agents", {})[pid] = updated_entry
     _write_json(CUSTOM_REGISTRY, custom)
+    try:
+        apa_compiler.compile_persona(ROOT, pid, updated_entry, write=True)
+    except Exception:
+        pass
     _audit("edit", {"id": pid, "sha256_12": digest})
     print(f"apa: edited '{pid}' (sha256_12={digest}); shadowed in registry/custom.json")
     return 0
@@ -412,6 +715,7 @@ def cmd_export(args) -> int:
         "source": entry.get("payload"),
     }
     spfile = pfile.parent / "SOURCE.json"
+    specfile = pfile.parent / "spec.json"
     with tarfile.open(out, "w:gz") as tf:
         def add(name: str, data: bytes) -> None:
             ti = tarfile.TarInfo(name)
@@ -421,6 +725,8 @@ def cmd_export(args) -> int:
         add("PERSONA.md", pfile.read_bytes())
         if spfile.exists():
             add("SOURCE.json", spfile.read_bytes())
+        if specfile.exists():
+            add("spec.json", specfile.read_bytes())
     _audit("export", {"id": pid, "file": str(out)})
     print(f"apa: exported '{pid}' -> {out} ({out.stat().st_size} bytes)")
     return 0
@@ -442,6 +748,8 @@ def cmd_import(args) -> int:
                 if "manifest.json" in names else "{}"
             source_raw = tf.extractfile("SOURCE.json").read().decode("utf-8") \
                 if "SOURCE.json" in names else "{}"
+            spec_raw = tf.extractfile("spec.json").read().decode("utf-8") \
+                if "spec.json" in names else None
     except tarfile.TarError as e:
         print(f"apa: cannot read bundle: {e}", file=sys.stderr)
         return 2
@@ -464,8 +772,11 @@ def cmd_import(args) -> int:
     sp.update({"id": pid, "imported_from": str(bundle), "sha256_12": digest})
     _write_json(outdir / "SOURCE.json", sp)
 
+    if spec_raw:
+        (outdir / "spec.json").write_text(spec_raw, encoding="utf-8")
+
     custom = _read_json(CUSTOM_REGISTRY, {"agents": {}})
-    custom.setdefault("agents", {})[pid] = {
+    imported_entry = {
         "vendor": manifest.get("vendor") or fm.get("vendor", "Custom"),
         "family": manifest.get("family") or fm.get("family", pid),
         "aliases": manifest.get("aliases", []),
@@ -475,7 +786,17 @@ def cmd_import(args) -> int:
         "tags": manifest.get("tags", []),
         "origin": "import",
     }
+    custom.setdefault("agents", {})[pid] = imported_entry
     _write_json(CUSTOM_REGISTRY, custom)
+    if not spec_raw:
+        try:
+            apa_compiler.compile_persona(ROOT, pid, imported_entry, write=True)
+        except Exception:
+            pass
+    _audit("import", {"id": pid, "bundle": str(bundle)})
+    print(f"apa: imported '{pid}' from {bundle} (sha256_12={digest})")
+    print(f"  activate: apa.py switch {pid}")
+    return 0
     _audit("import", {"id": pid, "bundle": str(bundle)})
     print(f"apa: imported '{pid}' from {bundle} (sha256_12={digest})")
     print(f"  activate: apa.py switch {pid}")
@@ -590,16 +911,14 @@ def cmd_session(args) -> int:
 
 
 def cmd_resume(args) -> int:
-    st = _read_state()
-    active = st.get("active")
+    reg = _load_registry()
+    active = _read_state().get("active")
     if not active:
         print("apa: nothing to resume (no active persona)")
         return 0
-    reg = _load_registry()
     if active not in reg["agents"]:
         print(f"apa: stored persona '{active}' no longer in registry; clearing")
-        st["active"] = None
-        _write_state(st)
+        _mutate_state(lambda st: st.__setitem__("active", None))
         return 1
     if args.yes:
         args.name, args.verbose = active, False
@@ -622,14 +941,8 @@ def cmd_apply_patch(args) -> int:
     if target is not None and target not in _load_registry()["agents"]:
         print(f"apa: patch references unknown persona '{target}'", file=sys.stderr)
         return 2
-    st = _read_state()
-    prev = st.get("active")
-    st["prev"] = prev
-    st["active"] = target
-    st["activated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
-    st["history"].append({"from": prev, "to": target, "ts": st["activated_at"],
-                          "via": "patch"})
-    _write_state(st)
+    ts = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    prev = _mutate_state(lambda st: _patch_state(st, target, ts))
     _audit("patch", {"from": prev, "to": target, "note": patch.get("note", "")})
     if target:
         print(f"apa: patch applied — session '{_current_session_name()}' "
@@ -954,6 +1267,19 @@ def cmd_revert(args) -> int:
 
 
 def main() -> int:
+    KNOWN_COMMANDS = {
+        "list", "switch", "adapt", "use", "set", "activate",
+        "info", "clear", "off", "reset", "deactivate",
+        "status", "search", "new", "edit", "export",
+        "import", "snapshot", "session", "resume",
+        "apply-patch", "stats", "suggest", "blend",
+        "ab", "ab-record", "history", "revert",
+        "compile", "verify", "hosts", "models",
+        "-h", "--help"
+    }
+    if len(sys.argv) > 1 and sys.argv[1] not in KNOWN_COMMANDS and not sys.argv[1].startswith("-"):
+        sys.argv.insert(1, "switch")
+
     ap = argparse.ArgumentParser(prog="apa", description="Agent Persona Adapter")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
@@ -961,14 +1287,35 @@ def main() -> int:
     p.add_argument("--json", action="store_true")
     p.add_argument("--tag", help="filter by capability tag (e.g. tdd, browser)")
 
-    p = sub.add_parser("switch", help="activate a persona")
-    p.add_argument("name")
+    p = sub.add_parser("switch", aliases=["adapt", "use", "set", "activate"], help="activate a persona")
+    p.add_argument("name", nargs="+")
+    p.add_argument("--host", help="target host runtime (antigravity, claude-code, opencode, gemini-cli, codex-cli, generic)")
+    p.add_argument("--model", help="target model profile (claude, gpt, gemini, open, small, generic)")
+    p.add_argument("--budget", type=int, help="token budget ceiling")
+    p.add_argument("--raw", action="store_true", help="bypass compiler & render raw legacy payload")
     p.add_argument("-v", "--verbose", action="store_true")
 
-    p = sub.add_parser("info", help="resolve + show persona metadata")
-    p.add_argument("name")
+    p = sub.add_parser("compile", help="compile vendor prompt into Persona Spec IR (spec.json)")
+    p.add_argument("name", nargs="?", default="all", help="persona id to compile, or 'all'")
+    p.add_argument("--all", action="store_true", help="compile all registered personas")
 
-    sub.add_parser("clear", help="deactivate persona, restore host persona")
+    p = sub.add_parser("verify", help="run fidelity & capability verification for persona on host")
+    p.add_argument("name", nargs="*", default=None, help="persona id (or leave empty with --all)")
+    p.add_argument("--host", help="target host profile (default: detected active host)")
+    p.add_argument("--model", help="target model profile (default: generic)")
+    p.add_argument("--all", action="store_true", help="verify all registered personas")
+    p.add_argument("--json", action="store_true", help="emit JSON verification report")
+
+    p = sub.add_parser("hosts", help="list supported host execution profiles")
+    p.add_argument("--json", action="store_true")
+
+    p = sub.add_parser("models", help="list supported model targets & profiles")
+    p.add_argument("--json", action="store_true")
+
+    p = sub.add_parser("info", help="resolve + show persona metadata")
+    p.add_argument("name", nargs="+")
+
+    sub.add_parser("clear", aliases=["off", "reset", "deactivate"], help="deactivate persona, restore host persona")
 
     p = sub.add_parser("status", help="show active persona")
     p.add_argument("--json", action="store_true")
@@ -1051,15 +1398,20 @@ def main() -> int:
     p.add_argument("sha")
 
     args = ap.parse_args()
-    fn = {"list": cmd_list, "switch": cmd_switch, "info": cmd_info,
-          "clear": cmd_clear, "status": cmd_status, "search": cmd_search,
+    fn = {"list": cmd_list, "switch": cmd_switch, "adapt": cmd_switch,
+          "use": cmd_switch, "set": cmd_switch, "activate": cmd_switch,
+          "info": cmd_info, "clear": cmd_clear, "off": cmd_clear,
+          "reset": cmd_clear, "deactivate": cmd_clear,
+          "status": cmd_status, "search": cmd_search,
           "new": cmd_new, "edit": cmd_edit, "export": cmd_export,
           "import": cmd_import, "snapshot": cmd_snapshot,
           "session": cmd_session, "resume": cmd_resume,
           "apply-patch": cmd_apply_patch, "stats": cmd_stats,
           "suggest": cmd_suggest, "blend": cmd_blend,
           "ab": cmd_ab, "ab-record": cmd_ab_record,
-          "history": cmd_history, "revert": cmd_revert}[args.cmd]
+          "history": cmd_history, "revert": cmd_revert,
+          "compile": cmd_compile, "verify": cmd_verify,
+          "hosts": cmd_hosts, "models": cmd_models}[args.cmd]
     try:
         return fn(args)
     except BrokenPipeError:

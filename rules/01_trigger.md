@@ -23,16 +23,18 @@ Matches:
 | Uppercase | `/APA CLAUDE` | case-insensitive |
 | Embedded | "please /APA cursor now" | mid-sentence match |
 
-## 3. Passive Trigger Detection
+## 3. Passive & Natural Language Trigger Detection
 
-Also activate when user says (case-insensitive, any order):
+Also activate immediately when user says (case-insensitive, any order):
+- "adapt <agent>" / "adapt to <agent>"
+- "apa adapt <agent>" / "apa <agent>"
 - "act as <agent>"
-- "switch to the <agent> persona"
+- "switch to the <agent> persona" / "switch to <agent>"
 - "be <agent>"
 - "impersonate <agent>"
 - "roleplay as <agent>"
 
-Passive triggers run the **same resolution procedure** as slash invocations.
+**Zero-Search Invariant**: Never scan directory trees or open repository architecture files (`ARCHITECTURE.md`, `TRD.md`, `PLAN.md`). Run `apa switch <agent>` directly. Passive triggers run the **same resolution procedure** as slash invocations.
 
 ## 4. Control Commands
 

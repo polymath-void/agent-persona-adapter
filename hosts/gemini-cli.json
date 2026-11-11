@@ -1,0 +1,106 @@
+{
+ "format": "apa-host/1",
+ "id": "gemini-cli",
+ "label": "Google Gemini CLI",
+ "detect": {
+  "env_any": [
+   "GEMINI_CLI"
+  ]
+ },
+ "grounding": "ref-repo/Open Source prompts/Gemini CLI/google-gemini-cli-system-prompt.txt (web_fetch / google_web_search from Gemini CLI docs)",
+ "verified": "partial",
+ "bindings": {
+  "read_file": {
+   "tool": "read_file",
+   "fidelity": "native"
+  },
+  "edit_file": {
+   "tool": "replace",
+   "fidelity": "native"
+  },
+  "write_file": {
+   "tool": "write_file",
+   "fidelity": "native"
+  },
+  "delete_file": {
+   "tool": "run_shell_command",
+   "how": "rm <path> (confirm first)",
+   "fidelity": "adapted"
+  },
+  "list_dir": {
+   "tool": "list_directory",
+   "fidelity": "native"
+  },
+  "glob": {
+   "tool": "glob",
+   "fidelity": "native"
+  },
+  "grep": {
+   "tool": "search_file_content",
+   "fidelity": "native"
+  },
+  "semantic_search": {
+   "tool": "search_file_content",
+   "how": "several scoped regex searches",
+   "fidelity": "degraded"
+  },
+  "shell": {
+   "tool": "run_shell_command",
+   "fidelity": "native"
+  },
+  "shell_output": {
+   "tool": "run_shell_command",
+   "how": "background with & and inspect via ps/logs",
+   "fidelity": "degraded"
+  },
+  "web_search": {
+   "tool": "google_web_search",
+   "fidelity": "native"
+  },
+  "web_fetch": {
+   "tool": "web_fetch",
+   "fidelity": "native"
+  },
+  "browser": null,
+  "todo": {
+   "tool": "@reply",
+   "how": "keep a numbered plan in replies",
+   "fidelity": "degraded"
+  },
+  "memory": {
+   "tool": "save_memory",
+   "fidelity": "native"
+  },
+  "ask_user": {
+   "tool": "@reply",
+   "fidelity": "adapted"
+  },
+  "subagent": null,
+  "diagnostics": {
+   "tool": "run_shell_command",
+   "how": "project linter / type-checker",
+   "fidelity": "adapted"
+  },
+  "notebook": {
+   "tool": "replace",
+   "how": "edit the .ipynb JSON",
+   "fidelity": "degraded"
+  },
+  "plan_mode": {
+   "tool": "@reply",
+   "how": "present plan and wait for approval",
+   "fidelity": "adapted"
+  },
+  "mcp": {
+   "tool": "@mcp",
+   "how": "configured MCP server tools",
+   "fidelity": "adapted"
+  },
+  "deploy": null,
+  "image_gen": null,
+  "reply": {
+   "tool": "@reply",
+   "fidelity": "native"
+  }
+ }
+}

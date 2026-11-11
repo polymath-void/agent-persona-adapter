@@ -1,0 +1,94 @@
+{
+ "format": "apa-host/1",
+ "id": "codex-cli",
+ "label": "OpenAI Codex CLI",
+ "detect": {
+  "env_any": [
+   "CODEX_SANDBOX",
+   "CODEX_SANDBOX_NETWORK_DISABLED",
+   "CODEX_MANAGED_BY_NPM"
+  ]
+ },
+ "grounding": "ref-repo/Open Source prompts/Codex CLI/openai-codex-cli-system-prompt-20250820.txt",
+ "verified": true,
+ "bindings": {
+  "read_file": {
+   "tool": "shell",
+   "how": "sed -n '1,200p' <file> / cat",
+   "fidelity": "adapted"
+  },
+  "edit_file": {
+   "tool": "apply_patch",
+   "fidelity": "native"
+  },
+  "write_file": {
+   "tool": "apply_patch",
+   "how": "*** Add File",
+   "fidelity": "native"
+  },
+  "delete_file": {
+   "tool": "apply_patch",
+   "how": "*** Delete File",
+   "fidelity": "native"
+  },
+  "list_dir": {
+   "tool": "shell",
+   "how": "ls -la",
+   "fidelity": "adapted"
+  },
+  "glob": {
+   "tool": "shell",
+   "how": "rg --files -g '<pattern>'",
+   "fidelity": "adapted"
+  },
+  "grep": {
+   "tool": "shell",
+   "how": "rg -n '<regex>'",
+   "fidelity": "adapted"
+  },
+  "semantic_search": {
+   "tool": "shell",
+   "how": "several scoped rg queries",
+   "fidelity": "degraded"
+  },
+  "shell": {
+   "tool": "shell",
+   "fidelity": "native"
+  },
+  "shell_output": null,
+  "web_search": null,
+  "web_fetch": null,
+  "browser": null,
+  "todo": {
+   "tool": "update_plan",
+   "fidelity": "native"
+  },
+  "memory": null,
+  "ask_user": {
+   "tool": "@reply",
+   "fidelity": "adapted"
+  },
+  "subagent": null,
+  "diagnostics": {
+   "tool": "shell",
+   "how": "project linter / type-checker",
+   "fidelity": "adapted"
+  },
+  "notebook": {
+   "tool": "apply_patch",
+   "how": "edit the .ipynb JSON",
+   "fidelity": "degraded"
+  },
+  "plan_mode": {
+   "tool": "update_plan",
+   "fidelity": "adapted"
+  },
+  "mcp": null,
+  "deploy": null,
+  "image_gen": null,
+  "reply": {
+   "tool": "@reply",
+   "fidelity": "native"
+  }
+ }
+}

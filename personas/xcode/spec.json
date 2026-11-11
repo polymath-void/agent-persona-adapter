@@ -1,0 +1,81 @@
+{
+ "format": "apa-spec/1",
+ "compiler": "apa-compiler/1.0",
+ "id": "xcode",
+ "vendor": "Apple",
+ "family": "xcode",
+ "sources": [
+  {
+   "path": "ref-repo/Xcode/ExplainAction.txt",
+   "sha256_12": "ee4aa3a93313",
+   "lines": 16
+  },
+  {
+   "path": "ref-repo/Xcode/DocumentAction.txt",
+   "sha256_12": "1193d0978788",
+   "lines": 19
+  }
+ ],
+ "identity": {
+  "name": "xcode"
+ },
+ "tools": [],
+ "capabilities": {},
+ "directives": [
+  {
+   "text": "Explain this to me.",
+   "category": "general",
+   "strength": 1,
+   "score": 12.25,
+   "tools": [],
+   "capabilities": [],
+   "section": "(preamble)",
+   "src": "ref-repo/Xcode/ExplainAction.txt:14",
+   "id": "d001"
+  },
+  {
+   "text": "Provide documentation for `{{selected_code}}`.",
+   "category": "general",
+   "strength": 1,
+   "score": 12.53,
+   "tools": [],
+   "capabilities": [],
+   "section": "(preamble)",
+   "src": "ref-repo/Xcode/DocumentAction.txt:14",
+   "id": "d002"
+  },
+  {
+   "text": "Respond with a single code block.",
+   "category": "voice",
+   "strength": 1,
+   "score": 14.32,
+   "tools": [],
+   "capabilities": [],
+   "section": "(preamble)",
+   "src": "ref-repo/Xcode/DocumentAction.txt:16",
+   "id": "d003"
+  },
+  {
+   "text": "Only include documentation comments. No other Swift code.",
+   "category": "code_change",
+   "strength": 2,
+   "score": 23.21,
+   "tools": [],
+   "capabilities": [],
+   "section": "(preamble)",
+   "src": "ref-repo/Xcode/DocumentAction.txt:17",
+   "id": "d004"
+  }
+ ],
+ "stats": {
+  "sections": 2,
+  "skipped_sections": 0,
+  "units": 10,
+  "dropped_env": 0,
+  "dropped_weak": 0,
+  "directives": 4,
+  "strong": 0,
+  "tools": 0,
+  "unmapped_tools": []
+ }
+}

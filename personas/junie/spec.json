@@ -1,0 +1,142 @@
+{
+ "format": "apa-spec/1",
+ "compiler": "apa-compiler/1.0",
+ "id": "junie",
+ "vendor": "JetBrains",
+ "family": "junie",
+ "sources": [
+  {
+   "path": "ref-repo/Junie/Prompt.txt",
+   "sha256_12": "1ec6d3b74822",
+   "lines": 120
+  }
+ ],
+ "identity": {
+  "name": "junie"
+ },
+ "tools": [],
+ "capabilities": {},
+ "directives": [
+  {
+   "text": "search_term (string) [required]: the term to search for, always surround by quotes: e.g. \"text to search\", \"some \\\"special term\\\"\"",
+   "category": "tool_policy",
+   "strength": 2,
+   "score": 22.7,
+   "tools": [],
+   "capabilities": [],
+   "section": "Arguments",
+   "src": "ref-repo/Junie/Prompt.txt:18",
+   "id": "d001"
+  },
+  {
+   "text": "If the full code of the file has already been provided, searching within it won't yield additional information, as you already have the complete code.",
+   "category": "code_change",
+   "strength": 1,
+   "score": 14.38,
+   "tools": [],
+   "capabilities": [],
+   "section": "Description",
+   "src": "ref-repo/Junie/Prompt.txt:37",
+   "id": "d002"
+  },
+  {
+   "text": "file (string) [required]: the path to the file",
+   "category": "general",
+   "strength": 2,
+   "score": 23.18,
+   "tools": [],
+   "capabilities": [],
+   "section": "Arguments",
+   "src": "ref-repo/Junie/Prompt.txt:49",
+   "id": "d003"
+  },
+  {
+   "text": "If [Tag: FileCode] or [Tag: FileStructure] is not provided for the file, it's important to explore its structure before opening or editing it.",
+   "category": "code_change",
+   "strength": 1,
+   "score": 14.15,
+   "tools": [],
+   "capabilities": [],
+   "section": "Description",
+   "src": "ref-repo/Junie/Prompt.txt:51",
+   "id": "d004"
+  },
+  {
+   "text": "This information will help you navigate the file more effectively and ensure you don't overlook any part of the code.",
+   "category": "code_change",
+   "strength": 2,
+   "score": 24.15,
+   "tools": [],
+   "capabilities": [],
+   "section": "Description",
+   "src": "ref-repo/Junie/Prompt.txt:51",
+   "id": "d005"
+  },
+  {
+   "text": "path (string) [required]: the full path to the file to open",
+   "category": "general",
+   "strength": 2,
+   "score": 23.02,
+   "tools": [],
+   "capabilities": [],
+   "section": "Arguments",
+   "src": "ref-repo/Junie/Prompt.txt:59",
+   "id": "d006"
+  },
+  {
+   "text": "Use it only if you absolutely certain you need to see the whole file, as it can be very slow and costly for large files.",
+   "category": "general",
+   "strength": 2,
+   "score": 22.8,
+   "tools": [],
+   "capabilities": [],
+   "section": "Description",
+   "src": "ref-repo/Junie/Prompt.txt:72",
+   "id": "d007"
+  },
+  {
+   "text": "line_number (integer) [required]: the line number to move the view window to",
+   "category": "general",
+   "strength": 2,
+   "score": 22.67,
+   "tools": [],
+   "capabilities": [],
+   "section": "Arguments",
+   "src": "ref-repo/Junie/Prompt.txt:80",
+   "id": "d008"
+  },
+  {
+   "text": "full_answer (string) [required]: Complete answer to the question. Must be formatted as valid Markdown.",
+   "category": "voice",
+   "strength": 2,
+   "score": 24.3,
+   "tools": [],
+   "capabilities": [],
+   "section": "Arguments",
+   "src": "ref-repo/Junie/Prompt.txt:102",
+   "id": "d009"
+  },
+  {
+   "text": "<COMMAND>: Provide one single command to execute. Don't write anything outside these tags.",
+   "category": "voice",
+   "strength": 2,
+   "score": 24.18,
+   "tools": [],
+   "capabilities": [],
+   "section": "RESPONSE FORMAT",
+   "src": "ref-repo/Junie/Prompt.txt:109",
+   "id": "d010"
+  }
+ ],
+ "stats": {
+  "sections": 26,
+  "skipped_sections": 3,
+  "units": 46,
+  "dropped_env": 0,
+  "dropped_weak": 32,
+  "directives": 10,
+  "strong": 0,
+  "tools": 0,
+  "unmapped_tools": []
+ }
+}

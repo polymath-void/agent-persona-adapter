@@ -16,22 +16,22 @@
 ## 2. Transitions
 
 ### 2.1 INACTIVE → ACTIVE (Activation)
-- Trigger: `/APA <agent>` or passive mention
-- Action: `apa.py switch <agent>`
+- Trigger: `adapt <agent>`, `apa <agent>`, `/APA <agent>`, or passive mention
+- Action: `apa switch <agent>` (resolved via `$PREFIX/bin/apa` or `$PATH`)
 - State write: `{"active": "<id>", "prev": null, ...}`
-- Context: inject persona payload + suppression marker
+- Context: inject persona payload + suppression marker + sync `apa_active_persona.md`
 
 ### 2.2 ACTIVE → ACTIVE (Swap)
-- Trigger: `/APA <new-id>`
-- Action: `apa.py switch <new-id>`
+- Trigger: `adapt <new-id>`, `apa <new-id>`, `/APA <new-id>`
+- Action: `apa switch <new-id>`
 - State write: `{"active": "<new-id>", "prev": "<old-id>", ...}`
-- Context: replace old persona payload with new
+- Context: atomic replace of `apa_active_persona.md` with new payload
 
 ### 2.3 ACTIVE → INACTIVE (Deactivation)
-- Trigger: `/APA clear`, `/APA off`, `/APA reset`
-- Action: `apa.py clear`
+- Trigger: `apa clear`, `apa off`, `apa reset`, `/APA clear`
+- Action: `apa clear`
 - State write: `{"active": null, ...}`
-- Context: emit restore marker, drop persona
+- Context: emit restore marker, drop persona, remove `apa_active_persona.md`
 
 ### 2.4 Session End
 - Trigger: conversation ends, agent terminates

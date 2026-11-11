@@ -25,7 +25,12 @@
         "refactoring",
         "general"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Anthropic/Claude Code/Prompt.txt",
+        "ref-repo/Anthropic/Claude Code/Tools.json",
+        "ref-repo/Anthropic/Claude Code 2.0.txt"
+      ]
     },
     "cursor-agent": {
       "vendor": "Cursor",
@@ -49,7 +54,11 @@
         "refactoring",
         "multi-file"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Cursor Prompts/Agent Prompt 2.0.txt",
+        "ref-repo/Cursor Prompts/Agent Prompt v1.2.txt"
+      ]
     },
     "antigravity": {
       "vendor": "Google",
@@ -76,7 +85,11 @@
         "vertex",
         "terminal"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Google/Antigravity/Fast Prompt.txt",
+        "ref-repo/Google/Antigravity/planning-mode.txt"
+      ]
     },
     "codex-cli": {
       "vendor": "OpenAI",
@@ -101,7 +114,11 @@
         "sandbox",
         "general"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Codex CLI/openai-codex-cli-system-prompt-20250820.txt",
+        "ref-repo/Open Source prompts/Codex CLI/Prompt.txt"
+      ]
     },
     "gemini-cli": {
       "vendor": "Google",
@@ -126,7 +143,10 @@
         "extensions",
         "general"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Gemini CLI/google-gemini-cli-system-prompt.txt"
+      ]
     },
     "opencode": {
       "vendor": "OpenCode",
@@ -151,7 +171,11 @@
         "free-models",
         "general"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/OpenCode/Agent Prompt (mimo.v2.5-free) 2026-09-11.txt",
+        "ref-repo/Open Source prompts/OpenCode/Agent Prompt (gpt.5.6.sol) 2026-09-11.txt"
+      ]
     },
     "cline": {
       "vendor": "Cline",
@@ -175,7 +199,10 @@
         "vscode",
         "checkpoints"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Cline/Prompt.txt"
+      ]
     },
     "roo-code": {
       "vendor": "Roo",
@@ -201,7 +228,10 @@
         "tdd",
         "vscode"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/RooCode/Prompt.txt"
+      ]
     },
     "windsurf": {
       "vendor": "Windsurf",
@@ -226,7 +256,11 @@
         "memories",
         "rules"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Windsurf/Prompt Wave 11.txt",
+        "ref-repo/Windsurf/Tools Wave 11.txt"
+      ]
     },
     "qwen-code": {
       "vendor": "Qwen",
@@ -250,7 +284,10 @@
         "alibaba",
         "general"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Qwen Code/Agent Prompt (gpt.5.6.sol) 2026-09-11.txt"
+      ]
     },
     "copilot": {
       "vendor": "GitHub",
@@ -276,7 +313,11 @@
         "agent-mode",
         "vscode"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/VSCode Agent/Prompt.txt",
+        "ref-repo/VSCode Agent/claude-sonnet-4.txt"
+      ]
     },
     "amp": {
       "vendor": "Sourcegraph",
@@ -292,13 +333,17 @@
         "@APA sg"
       ],
       "payload": "personas/amp/PERSONA.md",
-      "sha256_12": "8bddbdc59999",
+      "sha256_12": "efe36c24a921",
       "tags": [
         "terminal",
         "sourcegraph",
         "multi-model"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Amp/claude-4-sonnet.yaml",
+        "ref-repo/Amp/README.md"
+      ]
     },
     "warp-agent": {
       "vendor": "Warp",
@@ -320,7 +365,10 @@
         "workflows",
         "blocks"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Warp.dev/Prompt.txt"
+      ]
     },
     "trae": {
       "vendor": "ByteDance",
@@ -342,7 +390,11 @@
         "builder",
         "bytedance"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Trae/Builder Prompt.txt",
+        "ref-repo/Trae/Builder Tools.json"
+      ]
     },
     "kiro": {
       "vendor": "AWS",
@@ -366,7 +418,10 @@
         "steering",
         "planning"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Kiro/Spec_Prompt.txt"
+      ]
     },
     "junie": {
       "vendor": "JetBrains",
@@ -389,7 +444,10 @@
         "kotlin",
         "debugging"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Junie/Prompt.txt"
+      ]
     },
     "devin": {
       "vendor": "Cognition",
@@ -412,7 +470,10 @@
         "pr",
         "planning"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Devin AI/Prompt.txt"
+      ]
     },
     "replit-agent": {
       "vendor": "Replit",
@@ -434,7 +495,11 @@
         "fullstack",
         "deploy"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Replit/Prompt.txt",
+        "ref-repo/Replit/Tools.json"
+      ]
     },
     "lovable": {
       "vendor": "Lovable",
@@ -457,7 +522,11 @@
         "saas",
         "fullstack"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Lovable/Agent Prompt.txt",
+        "ref-repo/Lovable/Agent Tools.json"
+      ]
     },
     "bolt-new": {
       "vendor": "StackBlitz",
@@ -480,7 +549,10 @@
         "fullstack",
         "browser"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Bolt/Prompt.txt"
+      ]
     },
     "augment": {
       "vendor": "Augment",
@@ -502,7 +574,11 @@
         "codebase-context",
         "vscode"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Augment Code/claude-4-sonnet-agent-prompts.txt",
+        "ref-repo/Augment Code/claude-4-sonnet-tools.json"
+      ]
     },
     "kilo-code": {
       "vendor": "Kilo",
@@ -524,7 +600,10 @@
         "modes",
         "vscode"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Kilo Code/Agent Prompt (kilo.auto-free) 2026-09-11.txt"
+      ]
     },
     "manus": {
       "vendor": "Manus",
@@ -547,7 +626,11 @@
         "research",
         "tools"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Manus Agent Tools & Prompt/Prompt.txt",
+        "ref-repo/Manus Agent Tools & Prompt/tools.json"
+      ]
     },
     "qoder": {
       "vendor": "Qoder",
@@ -569,7 +652,10 @@
         "quest",
         "agentic"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Qoder/prompt.txt"
+      ]
     },
     "traycer": {
       "vendor": "Traycer",
@@ -591,7 +677,11 @@
         "phases",
         "orchestration"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Traycer AI/phase_mode_prompts.txt",
+        "ref-repo/Traycer AI/phase_mode_tools.json"
+      ]
     },
     "notion-ai": {
       "vendor": "Notion",
@@ -613,7 +703,11 @@
         "knowledge",
         "workspace"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/NotionAi/Prompt.txt",
+        "ref-repo/NotionAi/tools.json"
+      ]
     },
     "perplexity": {
       "vendor": "Perplexity",
@@ -635,7 +729,10 @@
         "search",
         "citations"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Perplexity/Prompt.txt"
+      ]
     },
     "comet": {
       "vendor": "Perplexity",
@@ -657,7 +754,11 @@
         "research",
         "shopping"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Comet Assistant/System Prompt.txt",
+        "ref-repo/Comet Assistant/tools.json"
+      ]
     },
     "hermes": {
       "vendor": "Nous",
@@ -679,7 +780,10 @@
         "terminal",
         "nous"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Hermes/Agent Prompt (nemotron.3.5.lightning-free) 2026-09-11.txt"
+      ]
     },
     "lumo": {
       "vendor": "Proton",
@@ -701,7 +805,10 @@
         "terminal",
         "proton"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/Lumo/Prompt.txt"
+      ]
     },
     "mimo-code": {
       "vendor": "Xiaomi",
@@ -723,7 +830,10 @@
         "xiaomi",
         "general"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Open Source prompts/MiMo Code/Agent Prompt (mimo.v2.5) 2026-09-11.txt"
+      ]
     },
     "cluely": {
       "vendor": "Cluely",
@@ -745,7 +855,11 @@
         "screen",
         "stealth"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Cluely/Default Prompt.txt",
+        "ref-repo/Cluely/Enterprise Prompt.txt"
+      ]
     },
     "codebuddy": {
       "vendor": "Tencent",
@@ -767,7 +881,11 @@
         "craft",
         "tencent"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/CodeBuddy Prompts/Craft Prompt.txt",
+        "ref-repo/CodeBuddy Prompts/Chat Prompt.txt"
+      ]
     },
     "emergent": {
       "vendor": "Emergent",
@@ -789,7 +907,11 @@
         "fullstack",
         "generation"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Emergent/Prompt.txt",
+        "ref-repo/Emergent/Tools.json"
+      ]
     },
     "leap-new": {
       "vendor": "Leap.new",
@@ -811,7 +933,11 @@
         "saas",
         "generation"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Leap.new/Prompts.txt",
+        "ref-repo/Leap.new/tools.json"
+      ]
     },
     "orchids": {
       "vendor": "Orchids",
@@ -833,7 +959,11 @@
         "decision-making",
         "workflows"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Orchids.app/System Prompt.txt",
+        "ref-repo/Orchids.app/Decision-making prompt.txt"
+      ]
     },
     "poke": {
       "vendor": "Poke",
@@ -855,7 +985,10 @@
         "voice",
         "agent"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Poke/Poke agent.txt"
+      ]
     },
     "same-dev": {
       "vendor": "Same.dev",
@@ -877,7 +1010,11 @@
         "fullstack",
         "replication"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Same.dev/Prompt.txt",
+        "ref-repo/Same.dev/Tools.json"
+      ]
     },
     "v0": {
       "vendor": "Vercel",
@@ -900,7 +1037,11 @@
         "vercel",
         "generation"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/v0 Prompts and Tools/Prompt.txt",
+        "ref-repo/v0 Prompts and Tools/Tools.json"
+      ]
     },
     "xcode": {
       "vendor": "Apple",
@@ -925,7 +1066,11 @@
         "ios",
         "macos"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Xcode/ExplainAction.txt",
+        "ref-repo/Xcode/DocumentAction.txt"
+      ]
     },
     "zai-code": {
       "vendor": "Zhipu",
@@ -949,7 +1094,10 @@
         "zhipu",
         "glm"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Z.ai Code/prompt.txt"
+      ]
     },
     "claude-chrome": {
       "vendor": "Anthropic",
@@ -973,7 +1121,10 @@
         "chrome",
         "assistant"
       ],
-      "origin": "ref-repo"
+      "origin": "ref-repo",
+      "sources": [
+        "ref-repo/Anthropic/Claude for Chrome/Prompt.txt"
+      ]
     }
   }
 }

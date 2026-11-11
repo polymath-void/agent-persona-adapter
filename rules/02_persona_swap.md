@@ -20,8 +20,9 @@
 
 ### 2.2 RESOLVE
 ```bash
-python3 ~/Projects/agent-persona-adapter/scripts/apa.py switch <name>
+apa switch <name>
 ```
+*(or `apa adapt <name>`, resolved dynamically via `$PREFIX/bin/apa` or `$PATH`)*
 
 Exit codes:
 - **0** → persona found, payload on stdout

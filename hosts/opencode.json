@@ -1,0 +1,102 @@
+{
+ "format": "apa-host/1",
+ "id": "opencode",
+ "label": "OpenCode (sst/opencode)",
+ "detect": {
+  "env_any": [
+   "OPENCODE"
+  ]
+ },
+ "grounding": "ref-repo/Open Source prompts/OpenCode/*.txt (tool ids per OpenCode built-ins; verify with your version)",
+ "verified": "partial",
+ "bindings": {
+  "read_file": {
+   "tool": "read",
+   "fidelity": "native"
+  },
+  "edit_file": {
+   "tool": "edit",
+   "fidelity": "native"
+  },
+  "write_file": {
+   "tool": "write",
+   "fidelity": "native"
+  },
+  "delete_file": {
+   "tool": "bash",
+   "how": "rm <path> (confirm first)",
+   "fidelity": "adapted"
+  },
+  "list_dir": {
+   "tool": "list",
+   "fidelity": "native"
+  },
+  "glob": {
+   "tool": "glob",
+   "fidelity": "native"
+  },
+  "grep": {
+   "tool": "grep",
+   "fidelity": "native"
+  },
+  "semantic_search": {
+   "tool": "task",
+   "how": "search sub-agent, or several grep queries",
+   "fidelity": "degraded"
+  },
+  "shell": {
+   "tool": "bash",
+   "fidelity": "native"
+  },
+  "shell_output": null,
+  "web_search": null,
+  "web_fetch": {
+   "tool": "webfetch",
+   "fidelity": "native"
+  },
+  "browser": null,
+  "todo": {
+   "tool": "todowrite",
+   "fidelity": "native"
+  },
+  "memory": {
+   "tool": "edit",
+   "how": "append to AGENTS.md",
+   "fidelity": "degraded"
+  },
+  "ask_user": {
+   "tool": "@reply",
+   "fidelity": "adapted"
+  },
+  "subagent": {
+   "tool": "task",
+   "fidelity": "native"
+  },
+  "diagnostics": {
+   "tool": "bash",
+   "how": "project linter / type-checker",
+   "fidelity": "adapted"
+  },
+  "notebook": {
+   "tool": "edit",
+   "how": "edit the .ipynb JSON",
+   "fidelity": "degraded"
+  },
+  "plan_mode": {
+   "tool": "@reply",
+   "how": "plan agent / present plan and wait",
+   "fidelity": "adapted"
+  },
+  "mcp": {
+   "tool": "@mcp",
+   "how": "configured MCP server tools",
+   "fidelity": "adapted"
+  },
+  "deploy": null,
+  "image_gen": null,
+  "reply": {
+   "tool": "@reply",
+   "fidelity": "native"
+  }
+ }
+}

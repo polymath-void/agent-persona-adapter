@@ -1,7 +1,7 @@
 {
   "id": "amp",
-  "source": "ref-repo/Amp/README.md",
-  "sha256_12": "8bddbdc59999",
-  "bytes": 605,
+  "source": "ref-repo/Amp/claude-4-sonnet.yaml",
+  "sha256_12": "efe36c24a921",
+  "bytes": 24007,
   "note": "educational persona extraction \u2014 see policy/PERSONA_POLICY.md"
 }

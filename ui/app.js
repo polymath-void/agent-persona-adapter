@@ -448,10 +448,14 @@ function viewPersonas(qs) {
   const paint = () => {
     grid.innerHTML = "";
     const q = search.value.trim().toLowerCase(), tag = tagSel.value;
+    // Fuzzy: if the query isn't a substring of anything, ask the difflib-port
+    // resolver for a single best match so typos ("cursr") still surface a card.
+    const fuzzyId = q ? resolve(q, metas) : null;
     const shown = ids.filter(id => {
       const m = metas[id];
       if (tag && !(m.tags || []).includes(tag)) return false;
       if (!q) return true;
+      if (id === fuzzyId) return true;
       return id.includes(q) || (m.vendor || "").toLowerCase().includes(q)
         || (m.family || "").toLowerCase().includes(q)
         || (m.aliases || []).some(a => a.toLowerCase().includes(q));

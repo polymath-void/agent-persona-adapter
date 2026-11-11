@@ -1,0 +1,53 @@
+{
+ "format": "apa-host/1",
+ "id": "generic",
+ "label": "Generic chat model (no tool execution)",
+ "detect": {},
+ "grounding": "fallback \u2014 assumes the model can only reply with text",
+ "verified": true,
+ "bindings": {
+  "reply": {
+   "tool": "@reply",
+   "fidelity": "native"
+  },
+  "ask_user": {
+   "tool": "@reply",
+   "fidelity": "adapted"
+  },
+  "todo": {
+   "tool": "@reply",
+   "how": "numbered plan in the reply",
+   "fidelity": "degraded"
+  },
+  "plan_mode": {
+   "tool": "@reply",
+   "how": "present plan and wait for approval",
+   "fidelity": "adapted"
+  },
+  "shell": {
+   "tool": "@user",
+   "how": "print the exact command for the user to run, then wait for its output",
+   "fidelity": "degraded"
+  },
+  "edit_file": {
+   "tool": "@user",
+   "how": "print a unified diff for the user to apply",
+   "fidelity": "degraded"
+  },
+  "write_file": {
+   "tool": "@user",
+   "how": "print the full file in a fenced block with its path",
+   "fidelity": "degraded"
+  },
+  "read_file": {
+   "tool": "@user",
+   "how": "ask the user to paste the file",
+   "fidelity": "degraded"
+  },
+  "grep": {
+   "tool": "@user",
+   "how": "give the user an rg command and ask for output",
+   "fidelity": "degraded"
+  }
+ }
+}

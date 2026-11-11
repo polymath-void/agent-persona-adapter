@@ -1,0 +1,108 @@
+{
+ "format": "apa-host/1",
+ "id": "claude-code",
+ "label": "Anthropic Claude Code",
+ "detect": {
+  "env_any": [
+   "CLAUDECODE",
+   "CLAUDE_CODE_ENTRYPOINT"
+  ]
+ },
+ "grounding": "ref-repo/Anthropic/Claude Code/Tools.json + Claude Code 2.0.txt",
+ "verified": true,
+ "bindings": {
+  "read_file": {
+   "tool": "Read",
+   "fidelity": "native"
+  },
+  "edit_file": {
+   "tool": "Edit",
+   "fidelity": "native"
+  },
+  "write_file": {
+   "tool": "Write",
+   "fidelity": "native"
+  },
+  "delete_file": {
+   "tool": "Bash",
+   "how": "rm <path> (confirm first)",
+   "fidelity": "adapted"
+  },
+  "list_dir": {
+   "tool": "LS",
+   "fidelity": "native"
+  },
+  "glob": {
+   "tool": "Glob",
+   "fidelity": "native"
+  },
+  "grep": {
+   "tool": "Grep",
+   "fidelity": "native"
+  },
+  "semantic_search": {
+   "tool": "Task",
+   "how": "search sub-agent, or several Grep queries",
+   "fidelity": "degraded"
+  },
+  "shell": {
+   "tool": "Bash",
+   "fidelity": "native"
+  },
+  "shell_output": {
+   "tool": "BashOutput",
+   "fidelity": "native"
+  },
+  "web_search": {
+   "tool": "WebSearch",
+   "fidelity": "native"
+  },
+  "web_fetch": {
+   "tool": "WebFetch",
+   "fidelity": "native"
+  },
+  "browser": null,
+  "todo": {
+   "tool": "TodoWrite",
+   "fidelity": "native"
+  },
+  "memory": {
+   "tool": "Edit",
+   "how": "append to CLAUDE.md",
+   "fidelity": "degraded"
+  },
+  "ask_user": {
+   "tool": "@reply",
+   "how": "ask in a chat reply and stop",
+   "fidelity": "adapted"
+  },
+  "subagent": {
+   "tool": "Task",
+   "fidelity": "native"
+  },
+  "diagnostics": {
+   "tool": "Bash",
+   "how": "project linter / type-checker",
+   "fidelity": "adapted"
+  },
+  "notebook": {
+   "tool": "NotebookEdit",
+   "fidelity": "native"
+  },
+  "plan_mode": {
+   "tool": "ExitPlanMode",
+   "fidelity": "native"
+  },
+  "mcp": {
+   "tool": "@mcp",
+   "how": "mcp__<server>__<tool> tools when configured",
+   "fidelity": "adapted"
+  },
+  "deploy": null,
+  "image_gen": null,
+  "reply": {
+   "tool": "@reply",
+   "fidelity": "native"
+  }
+ }
+}

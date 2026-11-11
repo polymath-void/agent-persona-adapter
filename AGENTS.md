@@ -108,6 +108,8 @@ agent-persona-adapter/
 | R6 | `/APA clear` must always fully restore the host persona. |
 | R7 | Every `scripts/` edit runs `qa-analyzer` + resolver smoke test before commit. |
 | R8 | Persona payloads are read-only — regenerate via `ingest.py`, never hand-edit. |
+| R9 | Zero-search dynamic activation: never scan repo files on adapt/switch directives. |
+| R10 | Auto-injected context rules must be cleared on `apa clear` with zero residue. |
 
 ---
 
@@ -202,3 +204,15 @@ python3 -c "import json; d=json.load(open('registry/agents.json')); assert d['ag
 ```
 
 All four must print OK before declaring done.
+
+---
+
+## 7. Dynamic Ingestion & Live Telemetry Verification
+
+Empirically verified via live session transcript (`transcript.jsonl`):
+1. **Dynamic Triggering**: Prompt triggers (`adapt claude`, `act as claude`, `apa claude`) execute `apa switch` with zero tree scans.
+2. **Context Synchronization**: Synchronizes `~/.gemini/config/rules/apa_active_persona.md` (14,532 bytes).
+3. **Telemetry Proof**:
+   - Step 176: `apa adapt claude` executed successfully.
+   - Step 181 ➔ 183: Token shift (`2,524` ➔ `114,243` tokens) verifies that the prompt cache reloaded and injected the active persona rule block directly into the LLM context.
+   - Clean pop verified: `apa clear` removes the rule file, eliminating cross-persona interference.

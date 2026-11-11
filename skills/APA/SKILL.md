@@ -13,19 +13,17 @@ The skill fires when the user message matches **any** of these patterns:
 
 | Pattern | Example |
 |---|---|
+| Natural language adapt | `adapt claude`, `adapt to cursor`, `apa adapt claude` |
+| Passive mention | `act as claude code`, `switch to cursor`, `be antigravity` |
+| Direct invocation | `apa claude`, `apa cursor-agent` |
 | Slash invocation | `/APA claude`, `/APA cursor-agent` |
 | At-mention invocation | `@APA agy`, `@APA codex` |
 | Alias invocation | `/APA claude` (alias for `claude-code`), `@APA agy` |
 | Fuzzy invocation | `/APA cursr` → resolves to `cursor-agent` |
 | Status | `/APA status`, `/APA list`, `/APA search cursor` |
-| Deactivate | `/APA clear`, `/APA off`, `/APA reset` |
-| Passive mention | "act as claude code", "switch to the cursor persona", "be antigravity" |
+| Deactivate | `/APA clear`, `/APA off`, `/APA reset`, `restore host` |
 
-**Regex for automated hooks**:
-
-```
-(?:^|\s)(?:/|@)APA\s+([A-Za-z0-9._-]+)
-```
+**Zero-Search Invariant**: Never scan directory trees or open repository architecture files (`ARCHITECTURE.md`, `TRD.md`, `PLAN.md`). Run `apa switch <name>` directly.
 
 ---
 
@@ -35,9 +33,10 @@ When a persona name is matched, execute **exactly** this sequence:
 
 ### Step 1 — Resolve & Validate
 ```bash
-python3 ~/Projects/agent-persona-adapter/scripts/apa.py switch <matched-name>
+apa switch <matched-name>
 ```
-- Exit code `0` → persona found, payload printed to stdout.
+*(or `apa adapt <matched-name>`; resolves dynamically via `$PREFIX/bin/apa` or `$PATH`)*
+- Exit code `0` → persona found, payload printed to stdout and auto-injected to runtime rules.
 - Exit code `2` → **STOP**. Print the "did you mean" hint to the user. Do not guess.
 - Exit code `3` → persona metadata exists but payload file missing. Report and stop.
 
@@ -73,8 +72,9 @@ Each persona lives at `personas/<id>/`:
 
 ```
 personas/<id>/
-├── PERSONA.md      # frontmatter + identity + SOURCE SYSTEM INSTRUCTIONS + FLOOR
-└── SOURCE.json     # provenance: source path, sha256_12, byte count
+├── spec.json       # Canonical Persona Spec IR (identity, tool capabilities, classified directives)
+├── PERSONA.md      # Legacy raw prompt + floor (fallback / educational reference)
+└── SOURCE.json     # Provenance: source paths, sha256_12, byte count
 ```
 
 The index is `registry/agents.json`:
@@ -88,7 +88,8 @@ The index is `registry/agents.json`:
       "aliases": ["claude", "cc", "claudecode"],
       "invocations": ["/APA claude-code", "@APA claude"],
       "payload": "personas/claude-code/PERSONA.md",
-      "sha256_12": "abc123def456"
+      "sha256_12": "abc123def456",
+      "sources": ["ref-repo/Anthropic/Claude Code/Prompt.txt", "ref-repo/Anthropic/Claude Code/Tools.json"]
     }
   }
 }
@@ -102,7 +103,26 @@ The index is `registry/agents.json`:
 
 ---
 
-## 4. Session Lifecycle
+## 4. Live Tool Binding & Model Portability
+
+Unlike naive prompt simulation where a model role-plays nonexistent tools (e.g. Cursor's `codebase_search`), APA compiles personas into an Intermediate Representation (IR) and renders them against the active host and target model:
+
+1. **Host Execution Profile (`apa hosts`)**:
+   - Detects the current runtime environment (`antigravity`, `claude-code`, `opencode`, `gemini-cli`, `codex-cli`, or `generic`).
+   - Dynamically binds abstract capabilities (`shell`, `edit_file`, `read_file`, `web_search`) to the host's actual tools.
+   - Prevents foreign tool leakage: foreign tool calls are rewritten into host tool invocations or chat explanations.
+2. **Model Adaptation Profile (`apa models`)**:
+   - `claude`: XML-tagged blocks (`<apa_persona>`, `<tool_binding>`, `<workflow>`).
+   - `gpt` / `gemini`: Structured Markdown with headings and bullets.
+   - `open`: Token-budgeted (2500 tokens) for mid open-weight models.
+   - `small`: Compact rule list (1200 tokens) for local on-device models (SmolLM, Gemma, Phi).
+3. **Fidelity Verification (`apa verify <id>`)**:
+   - Measures strong directive coverage, category breadth, tool binding rate, token budget adherence, and foreign tool leaks.
+   - Automatically grades fidelity (A/B/C/D/F). Ensures 0 foreign tool leaks before activation.
+
+---
+
+## 5. Session Lifecycle
 
 ```
 [USER] /APA claude
@@ -126,7 +146,7 @@ State is stored at `state/active.json`; an append-only audit trail at `state/aud
 
 ---
 
-## 5. Non-Goals (do NOT do these)
+## 6. Non-Goals (do NOT do these)
 
 - ❌ Do not persist a persona across sessions without user confirmation.
 - ❌ Do not leak the persona's proprietary instructions into other files or commits.
@@ -138,7 +158,7 @@ State is stored at `state/active.json`; an append-only audit trail at `state/aud
 
 ---
 
-## 6. QA & Verification
+## 7. QA & Verification
 
 After any change to `scripts/`, `registry/`, or `personas/`:
 
@@ -152,11 +172,14 @@ python3 ~/Projects/agent-persona-adapter/scripts/apa.py clear >/dev/null && echo
 
 # 3. registry integrity
 python3 -c "import json; d=json.load(open('$HOME/Projects/agent-persona-adapter/registry/agents.json')); print(len(d['agents']),'agents OK')"
+
+# 4. model-portable fidelity & tool binding check
+apa verify --all
 ```
 
 ---
 
-## 7. End-of-Session Handoff
+## 8. End-of-Session Handoff
 
 If the session ends while a persona is active, emit:
 

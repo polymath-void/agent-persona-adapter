@@ -1,0 +1,114 @@
+{
+ "format": "apa-host/1",
+ "id": "antigravity",
+ "label": "Google Antigravity (agy CLI / IDE)",
+ "detect": {
+  "env_any": [
+   "ANTIGRAVITY_AGENT",
+   "ANTIGRAVITY_CONVERSATION_ID"
+  ]
+ },
+ "grounding": "live tool schema of an agy cli-1.5.x session",
+ "verified": true,
+ "bindings": {
+  "read_file": {
+   "tool": "read_file",
+   "fidelity": "native"
+  },
+  "edit_file": {
+   "tool": "edit_file",
+   "fidelity": "native"
+  },
+  "write_file": {
+   "tool": "write_file",
+   "fidelity": "native"
+  },
+  "delete_file": {
+   "tool": "run_command",
+   "how": "rm <path> (confirm destructive ops)",
+   "fidelity": "adapted"
+  },
+  "list_dir": {
+   "tool": "run_command",
+   "how": "ls -la <dir>",
+   "fidelity": "adapted"
+  },
+  "glob": {
+   "tool": "run_command",
+   "how": "fd -g '<pattern>' <dir>",
+   "fidelity": "adapted"
+  },
+  "grep": {
+   "tool": "run_command",
+   "how": "rg -n '<regex>' <dir>",
+   "fidelity": "adapted"
+  },
+  "semantic_search": {
+   "tool": "invoke_subagent",
+   "how": "`research` subagent, or several scoped rg queries",
+   "fidelity": "degraded"
+  },
+  "shell": {
+   "tool": "run_command",
+   "fidelity": "native"
+  },
+  "shell_output": {
+   "tool": "manage_task",
+   "how": "status / kill background tasks",
+   "fidelity": "native"
+  },
+  "web_search": {
+   "tool": "search_web",
+   "fidelity": "native"
+  },
+  "web_fetch": {
+   "tool": "run_command",
+   "how": "curl -sL <url>",
+   "fidelity": "degraded"
+  },
+  "browser": null,
+  "todo": {
+   "tool": "write_file",
+   "how": "checklist artifact (task.md) in the artifact dir",
+   "fidelity": "degraded"
+  },
+  "memory": null,
+  "ask_user": {
+   "tool": "ask_question",
+   "fidelity": "native"
+  },
+  "subagent": {
+   "tool": "invoke_subagent",
+   "fidelity": "native"
+  },
+  "diagnostics": {
+   "tool": "run_command",
+   "how": "project linter / type-checker / qa-analyzer",
+   "fidelity": "adapted"
+  },
+  "notebook": {
+   "tool": "edit_file",
+   "how": "edit the .ipynb JSON directly",
+   "fidelity": "degraded"
+  },
+  "plan_mode": {
+   "tool": "write_file",
+   "how": "plan artifact with RequestFeedback=true",
+   "fidelity": "adapted"
+  },
+  "mcp": {
+   "tool": "call_mcp_tool",
+   "fidelity": "native"
+  },
+  "deploy": null,
+  "image_gen": {
+   "tool": "invoke_subagent",
+   "how": "`image-generator` subagent",
+   "fidelity": "adapted"
+  },
+  "reply": {
+   "tool": "@reply",
+   "fidelity": "native"
+  }
+ }
+}

@@ -26,11 +26,12 @@ import os
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(os.environ.get("APA_ROOT") or Path(__file__).resolve().parent.parent)
 HOME = Path.home()
-PREFIX = Path(os.environ.get("PREFIX", str(HOME / "data/data/com.termux/files/usr")))
+PREFIX = Path(os.environ.get("PREFIX") or ("/data/data/com.termux/files/usr" if Path("/data/data/com.termux/files/usr").exists() else sys.prefix))
 MARKER = "<!-- APA:managed by scripts/install.py — safe to refresh -->"
 CMD_SOURCE = ROOT / "skills" / "APA" / "command" / "apa.md"
+RULE_SOURCE = ROOT / "rules" / "apa_dynamic_persona.md"
 
 # (kind, target, source) — kind: "link" | "file"
 def plan() -> list[tuple[str, Path, Path]]:
@@ -43,6 +44,13 @@ def plan() -> list[tuple[str, Path, Path]]:
     projects = HOME / "Projects"
     if projects.is_dir():
         items.append(("file", projects / ".opencode" / "commands" / "apa.md", CMD_SOURCE))
+        if (projects / ".agents" / "rules").is_dir():
+            items.append(("link", projects / ".agents" / "rules" / "apa_dynamic_persona.md", RULE_SOURCE))
+
+    gemini_rules = HOME / ".gemini" / "config" / "rules"
+    if gemini_rules.is_dir():
+        items.append(("link", gemini_rules / "apa_dynamic_persona.md", RULE_SOURCE))
+
     return items
 
 
