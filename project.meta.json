@@ -4,16 +4,21 @@
   "slug": "agent-persona-adapter",
   "description": "Zero-dependency model-portable agent persona adapter with live host tool binding & verification",
   "category": "project",
-  "stack": ["python", "vanilla-js", "cli", "ai-agents"],
+  "stack": [
+    "python",
+    "vanilla-js",
+    "cli",
+    "ai-agents"
+  ],
   "status": "active",
   "created_at": "2026-11-07T18:33:38.040336+00:00",
-  "updated_at": "2026-11-12T00:07:00.000000+00:00",
+  "updated_at": "2026-11-11T22:45:04.336404+00:00",
   "created_by": "polymath-agent",
   "git": {
     "has_repo": true,
     "remote_url": "https://github.com/polymath-void/agent-persona-adapter.git",
     "branch": "main",
-    "head_commit": "pending",
+    "head_commit": "1baf4d5552b161a36330a84a7924dafcc8ab3e9c",
     "has_uncommitted_changes": true
   },
   "backup": {
